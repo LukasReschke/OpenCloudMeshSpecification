@@ -4,16 +4,16 @@
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>API Reference</title>
+    <title>Open Collaboration Services v2 (WIP)</title>
 
     <link href="stylesheets/screen.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="stylesheets/print.css" rel="stylesheet" type="text/css" media="print" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
       <script src="javascripts/all.js" type="text/javascript"></script>
 
       <script>
         $(function() {
-          setupLanguages(["shell","ruby","python"]);
+          setupLanguages(["Examples"]);
         });
       </script>
   </head>
@@ -28,9 +28,7 @@
     <div class="tocify-wrapper">
       <img src="images/logo.png" />
         <div class="lang-selector">
-              <a href="#" data-language-name="shell">shell</a>
-              <a href="#" data-language-name="ruby">ruby</a>
-              <a href="#" data-language-name="python">python</a>
+              <a href="#" data-language-name="Examples">Examples</a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
@@ -39,88 +37,395 @@
       <div id="toc">
       </div>
         <ul class="toc-footer">
-            <li><a href='#'>Sign Up for a Developer Key</a></li>
-            <li><a href='http://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
+            <li><a href='https://github.com/LukasReschke/OpenCloudMeshSpecification'>Send Change Request</a></li>
         </ul>
     </div>
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id='introduction'>Introduction</h1>
-<p>Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.</p>
+        <h1 id="introduction">Introduction</h1>
 
-<p>We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.</p>
+<p>This document defines APIs and protocols to enable integration between different web-services, servers and clients.</p>
 
-<p>This example API documentation page was created with <a href="http://github.com/tripit/slate">Slate</a>. Feel free to edit it and use it as a base for your own API&rsquo;s documentation.</p>
-<h1 id='authentication'>Authentication</h1>
-<blockquote>
-<p>To authorize, use this code:</p>
-</blockquote>
-<pre><code class="highlight ruby"><span class="nb">require</span> <span class="s1">'kittn'</span>
+<p>&ldquo;OCS v2.0&rdquo; consists of a set of API endpoints mainly targeted to be implemented by consumers and providers of file storage / sharing servers (&ldquo;cloud&rdquo;).</p>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
+<p>The goal is to enable Integration of cloud services, web services and social communities with each other, with desktop and mobile applications. This must be done in a decentralized and federated way, free and secure, privacy protected and vendor independent. OCS aims to solve these problems.</p>
+
+<h2 id="notational-conventions">Notational Conventions</h2>
+
+<p>The key words &ldquo;MUST&rdquo;, &ldquo;MUST NOT&rdquo;, &ldquo;REQUIRED&rdquo;, &ldquo;SHALL&rdquo;, &ldquo;SHALL NOT&rdquo;, &ldquo;SHOULD&rdquo;, &ldquo;SHOULD NOT&rdquo;, &ldquo;RECOMMENDED&rdquo;, &ldquo;MAY&rdquo;, and &ldquo;OPTIONAL&rdquo; in this document are to be interpreted as described in <a href="https://tools.ietf.org/html/rfc2119">RFC2119</a>.</p>
+
+<h2 id="terminology">Terminology</h2>
+
+<ul>
+<li><strong>&ldquo;Cloud&rdquo;:</strong>
+
+<ul>
+<li> Referring to file storage / sharing servers.</li>
+</ul></li>
+<li><strong>&ldquo;Consumer&rdquo;:</strong>
+
+<ul>
+<li>A desktop or mobile application or web service that access services that are provided by a server.</li>
+</ul></li>
+<li><strong>&ldquo;Service provider&rdquo; or &ldquo;server&rdquo;:</strong>
+
+<ul>
+<li>A web service or server who provides a open collaboration services compatible APIs.</li>
+</ul></li>
+<li><strong>&ldquo;Provider service list&rdquo;:</strong> 
+
+<ul>
+<li>A JSON configuration endpoint which specifies which services are provided by a server or service provider.</li>
+</ul></li>
+<li><strong>&ldquo;Module&rdquo; or &ldquo;service&rdquo;:</strong>
+
+<ul>
+<li>OCS is aimed to be a modular system allowing providers to only implement the required subsets. Any functionality is thus encapsulated in so called &ldquo;modules&rdquo; or &ldquo;services&rdquo; which are all optional.</li>
+</ul></li>
+</ul>
+
+<h2 id="security-considerations">Security Considerations</h2>
+
+<h3 id="transmission-layer">Transmission layer</h3>
+
+<p>All data transfer SHOULD be TLS encrypted to ensure the integrity and security of transferred data.</p>
+
+<p>Consumers MUST properly validate the certificate chain and in case of an error cancel the connection and SHOULD notify the user about the occurred problem.</p>
+
+<p>For enhanced security Consumers MAY follow the Public Key Pinning Extension for HTTP (<a href="http://www.rfc-editor.org/rfc/rfc7469.txt">RFC 7469</a>) as well as other HTTP security best practices.</p>
+
+<h3 id="secrets">Secrets</h3>
+
+<p>Any secrets used to exchange data MUST be generated using a strong random number generator (such as <code class="prettyprint">/dev/urandom</code>)</p>
+
+<h2 id="performance-scalability">Performance / Scalability</h2>
+
+<p>The service must be usable by a lot of users in parallel. Because of that it is important to build the architecture in a scalable way. Every component of the architecture must be cluster enabled, accessible in a parallel way and stateless.</p>
+
+<h3 id="cookies">Cookies</h3>
+
+<p>To work together with load-balanced environments consumers SHOULD resend any cookies as defined in <a href="http://tools.ietf.org/html/rfc6265">RFC 6265</a>. As stated in the &ldquo;Authentication&rdquo; section any Basic Auth authentication header MUST be resend.</p>
+
+<p>It shall be noted that OCS endpoints MUST behave properly regardless whether cookies are resent or not.</p>
+
+<h2 id="formats-encoding">Formats / Encoding</h2>
+
+<p>To avoid interoperability problems this section defines formats and encoding that OCS endpoints as well as consumers MUST obey.</p>
+
+<h3 id="encoding">Encoding</h3>
+
+<p>Any data sent and received MUST be UTF-8 encoded.</p>
+
+<h3 id="date-and-time-format">Date and time format</h3>
+
+<p>All dates and time representations MUST be in <a href="http://www.iso.org/iso/home/standards/iso8601.htm">ISO 8601</a> format. This means all of the following values are valid:</p>
+
+<ul>
+<li>Date
+
+<ul>
+<li>2015-06-03</li>
+</ul></li>
+<li>Combined date and time in UTC
+
+<ul>
+<li>2015-06-03T13:21:58+00:00</li>
+<li>2015-06-03T13:21:58Z</li>
+</ul></li>
+<li>Week
+
+<ul>
+<li>2015-W23</li>
+</ul></li>
+<li>Date with week number
+
+<ul>
+<li>2015-W23-3</li>
+</ul></li>
+<li>Ordinal date
+
+<ul>
+<li>2015-154</li>
+</ul></li>
+</ul>
+
+<p>Consumers as well as endpoints SHALL NOT make assumption about the representation as long as it follows ISO 8601. The preferred variation is though the regular Date representation &ldquo;YYYY-MM-DD&rdquo;.</p>
+
+<p>If an invalid date format has been provided consumers and endpoints MAY stop processing the data. </p>
+
+<h2 id="output-format-ocs-format">Output format / OCS Format</h2>
+
+<p>OCS endpoints MUST be able to output data in a XML format as well as a JSON representation. This means that the returned XML output SHALL NOT contain any attributes as these cannot be mapped properly to a JSON object.</p>
+
+<p>To specify the encoding a GET parameter <code class="prettyprint">format</code> can be by the customer send with one of the following values:</p>
+
+<ul>
+<li><code class="prettyprint">json</code>
+
+<ul>
+<li>Returns a JSON formatted output, the Content-Type MUST be set to <code class="prettyprint">application/json; charset=utf-8</code></li>
+</ul></li>
+<li><code class="prettyprint">xml</code>
+
+<ul>
+<li>Returns a XML formatted output, the Content-Type MUST be set to <code class="prettyprint">text/xml; charset=UTF-8</code></li>
+</ul></li>
+</ul>
+
+<p>A OCS response MUST consist of the following elements:</p>
+
+<ul>
+<li><code class="prettyprint">ocs</code>: Array that contains the whole response
+
+<ul>
+<li><code class="prettyprint">meta</code>: Array that contains meta information
+
+<ul>
+<li><code class="prettyprint">status</code>: The status of the response, either &ldquo;ok&rdquo; or &ldquo;fail&rdquo;. MUST be &ldquo;ok&rdquo; if statuscode is set to 200, &ldquo;fail&rdquo; otherwise.</li>
+<li><code class="prettyprint">statuscode</code>: The OCS status code of the response, everything except 200 MUST be handled as failure.</li>
+<li><code class="prettyprint">message</code>: An optional message that MAY contain a status message, such as a error message.</li>
+</ul></li>
+<li><code class="prettyprint">data</code>: Array that contains the actual response, content of the array depends completely on the endpoint.</li>
+</ul></li>
+</ul>
+
+<p>This means that a message MUST look like the following for XML responses, be aware that empty fields MUST still be existent:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="nt">&lt;users&gt;</span>
+   <span class="c">&lt;!-- List of user names --&gt;</span>
+   <span class="nt">&lt;element&gt;</span>Frank<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>admin<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>test<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>test1<span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;/users&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
-<pre><code class="highlight python"><span class="kn">import</span> <span class="nn">kittn</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre>
-<pre><code class="highlight shell"><span class="c"># With shell, you can just pass the correct header with each request</span>
-curl <span class="s2">"api_endpoint_here"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre>
-
-<blockquote>
-<p>Make sure to replace <code class="prettyprint">meowmeowmeow</code> with your API key.</p>
-</blockquote>
-
-<p>Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our <a href="http://example.com/developers">developer portal</a>.</p>
-
-<p>Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:</p>
-
-<p><code class="prettyprint">Authorization: meowmeowmeow</code></p>
-
-<p><aside class="notice">
-You must replace <code class="prettyprint">meowmeowmeow</code> with your personal API key.
-</aside></p>
-<h1 id='kittens'>Kittens</h1><h2 id='get-all-kittens'>Get All Kittens</h2><pre><code class="highlight ruby"><span class="nb">require</span> <span class="s1">'kittn'</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span>
-</code></pre>
-<pre><code class="highlight python"><span class="kn">import</span> <span class="nn">kittn</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre>
-<pre><code class="highlight shell">curl <span class="s2">"http://example.com/api/kittens"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre>
-
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
-<pre><code class="highlight json"><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fluffums"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calico"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Isis"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
+<p>The mapped JSON response MUST look like the following, be aware that empty fields MUST have a value of <code class="prettyprint">null</code>: </p>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"ocs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"statuscode"</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"users"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"Frank"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"admin"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"test"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"test1"</span><span class="w">
+            </span><span class="p">]</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>This endpoint retrieves all kittens.</p>
-<h3 id='http-request'>HTTP Request</h3>
-<p><code class="prettyprint">GET http://example.com/kittens</code></p>
-<h3 id='query-parameters'>Query Parameters</h3>
+<h3 id="reserved-status-codes">Reserved status codes</h3>
+
+<p>The following status codes are reserved and MUST not be used for any other purposes. Other status codes indicate custom errors that can be used by modules. </p>
+
+<table><thead>
+<tr>
+<th>Statuscode</th>
+<th>Usage</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication failed</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Unknown request</td>
+</tr>
+</tbody></table>
+
+<p>Note that all responses MUST return a HTTP status code 200, the OCS status code is completely independent from this. In case of a fatal server error that makes the instance inaccessible a 5xx error MAY be acceptable.</p>
+
+<h1 id="authentication">Authentication</h1>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/{endpoint}</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<blockquote>
+<p>Make sure to replace <code class="prettyprint">YWRtaW46YWRtaW4=</code> with the encoded credentials.</p>
+</blockquote>
+
+<p>Clients SHOULD directly try HTTP Basic Authentication and not try to perform a Digest Authentication based authentication. This will save the amount of requests originating to the endpoint.</p>
+
+<p>Authentication is performed by sending a Basic HTTP Authentication header. Thus OCS endpoints MUST support the Basic Auth Access Authentication system as defined in <a href="https://tools.ietf.org/html/rfc2617">RFC2617</a>. </p>
+
+<p>The credentials provided in the Authentication header MUST be UTF-8 encoded. Taking <code class="prettyprint">contrasea</code> as example the correct encoding would be <code class="prettyprint">Y29udHJhc2XDsWE=</code>, any other encoding such as  ISO-8859-1 (<code class="prettyprint">Y29udHJhc2XxYQ==</code>) is considered invalid and MUST NOT be used. </p>
+
+<p>OCS compatible APIs MAY use cookies as defined in <a href="http://tools.ietf.org/html/rfc6265">RFC 6265</a> to authenticate future requests as well, if after successful authentication the endpoint sends further cookies clients SHOULD resend these for future requests. However, any request MUST then include the Basic Authentication header as well as the provided cookies. When resending cookies consumers MUST add the following HTTP header to all requests: <code class="prettyprint">OCS-REQUEST: true</code>.</p>
+
+<p>OCS endpoints MUST in all cases handle connections correctly regardless whether cookies are sent.</p>
+
+<h1 id="service-discovery">Service Discovery</h1>
+
+<p>The provider service list are used by OCS for service discovery purposes to allow mapping the provided services and endpoint URIs.</p>
+
+<p>Every service provider MUST provide a provider service list located as <code class="prettyprint">/ocs-provider/</code> under the directory of the application. For example if there would be an OCS compatible application running at <code class="prettyprint">https://demo.owncloud.org/</code> the provider service list MUST be located at <code class="prettyprint">https://demo.owncloud.org/ocs-provider/</code>. If the application would run on <code class="prettyprint">https://mycloud.com/mycloud/</code> the service MUST be accessible from <code class="prettyprint">https://mycloud.com/mycloud/ocs-provider/</code>.</p>
+
+<p>Serving the provider service list at this location allows providers to generate them dynamically also in environments where programming languages pose limitations on the routing, such as PHP. In the PHP scenario this would mean that a <code class="prettyprint">index.php</code> file stored under <code class="prettyprint">/ocs-provider/</code> would be served.</p>
+
+<p>A provider service list consists of the following elements:</p>
+
+<ol>
+<li><code class="prettyprint">version</code>: Version identifier
+
+<ul>
+<li>Integer indicating the current version of the supported OCS standard. (e.g. <code class="prettyprint">int(2)</code>)</li>
+</ul></li>
+<li><code class="prettyprint">services</code>: Array of services
+
+<ul>
+<li>A of services served by OCS from this instance. Services are defined as following:</li>
+<li><code class="prettyprint">key</code>: Name of the endpoints</li>
+<li><code class="prettyprint">version</code>: Version of the specific endpoint (may differ from the OCS version)</li>
+<li><code class="prettyprint">endpoints</code>: Array of endpoint names and the relative URI
+    - <code class="prettyprint">key</code>: Name of the endpoint
+    - <code class="prettyprint">value</code>: Relative URI to the endpoint</li>
+</ul></li>
+</ol>
+
+<p>A provider service definition MUST look like the following (the endpoint URI MAY be changed by providers):</p>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"FEDERATED_SHARING"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"share"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/cloud/shares"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"accept"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/cloud/shares"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="nt">"PRIVATE_DATA"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"getattribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/privatedata/getattribute"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"setattribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/privatedata/setattribute"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"deleteattribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/privatadata/deleteattribute"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>In this case if an instruction of the module <code class="prettyprint">PRIVATE_DATA</code> serving at <code class="prettyprint">demo.example.org/mycloud/</code>defines to interact on the endpoint <code class="prettyprint">getattribute</code> the absolute URI would resolve to <code class="prettyprint">demo.example.org/mycloud/ocs/privatedata/getattribute</code>.</p>
+
+<h2 id="cross-origin-communication">Cross-Origin communication</h2>
+
+<p>Due to the Same-Origin-Policy it is usually not possible for browsers to access the content of files hosted on another domain. To enable browser-based clients, providers are encouraged to set proper CORS headers on the resource to allow cross-domain access to the provider service list.</p>
+
+<p>If a provider service list cannot be accessed by a consumer, consumers MUST perform the OCS request and in case of a <code class="prettyprint">404</code> failure consider the endpoint to be not existent.</p>
+
+<h2 id="versioning">Versioning</h2>
+
+<p>When declaring a version within the service the service MUST stay backwards compatible on the defined URI. Providers MAY remove the endpoint but SHALL NOT make an existing endpoint incompatible. </p>
+
+<p>An idiomatic approach to this would be to prepend versions to the URI, such as <code class="prettyprint">/api/1/</code> for version 1 of an endpoint and <code class="prettyprint">/api/2/</code> for the backwards incompatible version 2 of an API.</p>
+
+<h1 id="modules">Modules</h1>
+
+<p>OCS is based on modules providing specialized functionalities. A service provider MAY only implement a smaller subset of a defined module.</p>
+
+<p>Providers MUST ensure that only supported modules are listed in the provider service list. Providers MAY not include modules into the providers service list if the endpoints are considered private API.</p>
+
+<p>The current specified modules are:</p>
+
+<ul>
+<li><strong>FEDERATED_SHARING:</strong>
+
+<ul>
+<li>Allows different cloud service providers to share files over different instances.</li>
+</ul></li>
+<li><strong>PRIVATE_DATA:</strong> 
+
+<ul>
+<li>Key-Value store allowing consumers to store and retrieve values.</li>
+</ul></li>
+<li><strong>SHARING:</strong> 
+
+<ul>
+<li>Allows consumers to share local files.</li>
+</ul></li>
+<li><strong>PROVISIONING:</strong> 
+
+<ul>
+<li>Allows consumers to manage users, groups and applications on the instance.</li>
+</ul></li>
+<li><strong>ACTIVITY:</strong> 
+
+<ul>
+<li>Activity stream provided by the server</li>
+</ul></li>
+</ul>
+
+<p>More modules are subject to be added to future OCS versions. Furthermore providers MAY provide their own modules if these get a vendor prefix. (e.g. &ldquo;owncloud-print&rdquo; for a fictional printing API of the &ldquo;ownCloud&rdquo; product)</p>
+
+<h1 id="federated-sharing">Federated Sharing</h1>
+
+<blockquote>
+<p>A valid service definition looks as following:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"FEDERATED_SHARING"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"share"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/shares"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"webdav"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/public.php/webdav/"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>The &ldquo;FEDERATED_SHARING&rdquo; module allows consumers to share files between service providers compatible with this module. This module handles the following tasks:</p>
+
+<ul>
+<li>Sending a share offer to other providers (<code class="prettyprint">share</code>)</li>
+<li>Accepting a share offer from other providers (<code class="prettyprint">share</code>)</li>
+<li>Denying a share offer from other providers (<code class="prettyprint">share</code>)</li>
+<li>Unsharing a previously shared file (<code class="prettyprint">share</code>)</li>
+<li>Accessing shared files using WebDAV (<code class="prettyprint">webdav</code>)</li>
+</ul>
+
+<h2 id="sending-a-share-offer">Sending a share offer</h2>
+
+<p>This endpoint takes share offers from remote instances, once the recipient has logged-in he is expected to accept or deny the share.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/cloud/shares</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">119</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+
+shareWith=RecipientName&amp;token=MyRandomToken&amp;name=Documents&amp;remoteId=5&amp;owner=ShareingUser&amp;remote=http://localhost/master/
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.com/{share}</code></p>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
 <table><thead>
 <tr>
 <th>Parameter</th>
@@ -129,127 +434,2014 @@ You must replace <code class="prettyprint">meowmeowmeow</code> with your persona
 </tr>
 </thead><tbody>
 <tr>
-<td>include_cats</td>
-<td>false</td>
-<td>If set to true, the result will also include cats.</td>
+<td>shareWith</td>
+<td></td>
+<td>User name of the receiving user.</td>
 </tr>
 <tr>
-<td>available</td>
-<td>true</td>
-<td>If set to false, the result will include kittens that have already been adopted.</td>
+<td>token</td>
+<td></td>
+<td>Unique and secret token used to access the file.</td>
+</tr>
+<tr>
+<td>name</td>
+<td></td>
+<td>Name of the file or folder.</td>
+</tr>
+<tr>
+<td>remoteId</td>
+<td></td>
+<td>Unique ID to identify the file on the sender side, used for accepting and denying shares.</td>
+</tr>
+<tr>
+<td>owner</td>
+<td></td>
+<td>User name of the sending user.</td>
+</tr>
+<tr>
+<td>remote</td>
+<td></td>
+<td>URI of the sending instance.</td>
 </tr>
 </tbody></table>
 
-<p><aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside></p>
-<h2 id='get-a-specific-kitten'>Get a Specific Kitten</h2><pre><code class="highlight ruby"><span class="nb">require</span> <span class="s1">'kittn'</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre>
-<pre><code class="highlight python"><span class="kn">import</span> <span class="nn">kittn</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre>
-<pre><code class="highlight shell">curl <span class="s2">"http://example.com/api/kittens/3"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre>
+<h3 id="response">Response</h3>
 
 <blockquote>
-<p>The above command returns JSON structured like this:</p>
+<p>In case of success, a OCS success message without further details is returned:</p>
 </blockquote>
-<pre><code class="highlight json"><span class="p">{</span><span class="w">
-  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Isis"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
 
-<p>This endpoint retrieves a specific kitten.</p>
-
-<p><aside class="warning">If you&rsquo;re not using an administrator API key, note that some kittens will return 403 Forbidden if they are hidden for admins only.</aside></p>
-<h3 id='http-request'>HTTP Request</h3>
-<p><code class="prettyprint">GET http://example.com/kittens/&lt;ID&gt;</code></p>
-<h3 id='url-parameters'>URL Parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>ID</td>
-<td>The ID of the cat to retrieve</td>
-</tr>
-</tbody></table>
-
-          <h1 id='errors'>Errors</h1>
-<p><aside class="notice">This error section is stored in a separate file in <code class="prettyprint">includes/_errors.md</code>. Slate allows you to optionally separate out your docs into many files&hellip;just save them to the <code class="prettyprint">includes</code> folder and add them to the top of your <code class="prettyprint">index.md</code>&rsquo;s frontmatter. Files are included in the order listed.</aside></p>
-
-<p>The Kittn API uses the following error codes:</p>
+<p>The expected response is, in case of success, a OCS success message. In error cases the following OCS status codes MUST be used:</p>
 
 <table><thead>
 <tr>
-<th>Error Code</th>
+<th>Status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
 <td>400</td>
-<td>Bad Request &ndash; Your request sucks</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Unauthorized &ndash; Your API key is wrong</td>
-</tr>
-<tr>
-<td>403</td>
-<td>Forbidden &ndash; The kitten requested is hidden for administrators only</td>
-</tr>
-<tr>
-<td>404</td>
-<td>Not Found &ndash; The specified kitten could not be found</td>
-</tr>
-<tr>
-<td>405</td>
-<td>Method Not Allowed &ndash; You tried to access a kitten with an invalid method</td>
-</tr>
-<tr>
-<td>406</td>
-<td>Not Acceptable &ndash; You requested a format that isn&rsquo;t json</td>
-</tr>
-<tr>
-<td>410</td>
-<td>Gone &ndash; The kitten requested has been removed from our servers</td>
-</tr>
-<tr>
-<td>418</td>
-<td>I&rsquo;m a teapot</td>
-</tr>
-<tr>
-<td>429</td>
-<td>Too Many Requests &ndash; You&rsquo;re requesting too many kittens! Slown down!</td>
+<td>Invalid parameters</td>
 </tr>
 <tr>
 <td>500</td>
-<td>Internal Server Error &ndash; We had a problem with our server. Try again later.</td>
+<td>Internal server error</td>
 </tr>
 <tr>
 <td>503</td>
-<td>Service Unavailable &ndash; We&rsquo;re temporarially offline for maintanance. Please try again later.</td>
+<td>If the server does not support Federated Sharing (i.e. disabled by administrator)</td>
+</tr>
+</tbody></table>
+
+<p>In case of an error consumers SHOULD be made aware of the error. The OCS message MUST be used by the endpoint to specify a proper error message that can be used to analyze issues.</p>
+
+<aside class="notice">
+This request needs to be sent to the receiving instance by the sending instance. This request is not expected to be sent directly by an user.
+</aside>
+
+<h2 id="accept-a-share-offer">Accept a share offer</h2>
+
+<p>After a share offer has been received the receiving instance should notify the user in question and give the possibility to accept or deny a share offer. Using this API call a federated share can be accepted.</p>
+
+<p>Providers MAY inform the sending user if a share has been accepted.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Assuming a provider wants to accept the share request of the file sent in the <code class="prettyprint">share</code> endpoint (<code class="prettyprint">remoteId: 6</code>, <code class="prettyprint">token: TjuMOB1as7iZ1c6</code>) the following request needs to be sent to the remote (<code class="prettyprint">http://sender.example.org</code>): </p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/cloud/shares/6/accept</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">sender.example.org</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">21</span>
+
+token=TjuMOB1as7iZ1c6
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.com/{share}/{remoteId}/accept</code></p>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>remoteId</td>
+<td>Received <code class="prettyprint">remoteId</code> of the share.</td>
+</tr>
+</tbody></table>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>token</td>
+<td></td>
+<td>Unique and secret token used to access the file.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response MUST in any case be a OCS success message even if the deny did not work. The only exception being 503 when Federated Sharing is not enabled.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>503</td>
+<td>If the server does not support Federated Sharing (i.e. disabled by administrator)</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
+</aside>
+
+<h2 id="reject-a-share">Reject a share</h2>
+
+<p>This endpoint informs the sender that the recipient rejected the share. This endpoint is also intended to be used if the user first accepted the share and later decides to unshare it.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Assuming a provider wants to reject the share request of the file sent in the <code class="prettyprint">share</code> endpoint (<code class="prettyprint">remoteId: 6</code>, <code class="prettyprint">token: TjuMOB1as7iZ1c6</code>) the following request needs to be sent to the remote (<code class="prettyprint">http://sender.example.org</code>): </p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/cloud/shares/6/decline</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">sender.example.org</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">21</span>
+
+token=TjuMOB1as7iZ1c6
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.com/{share}/{remoteId}/accept</code></p>
+
+<h3 id="url-parameters">URL parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>remoteId</td>
+<td>Received <code class="prettyprint">remoteId</code> of the share.</td>
+</tr>
+</tbody></table>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>token</td>
+<td></td>
+<td>Unique and secret token used to access the file.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response MUST in any case be a OCS success message even if the deny did not work. The only exception being 503 when Federated Sharing is not enabled.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>503</td>
+<td>If the server does not support Federated Sharing (i.e. disabled by administrator)</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
+</aside>
+
+<h2 id="unshare-a-file">Unshare a file</h2>
+
+<p>Allows owners of shared files and folders to notify recipient of a revocation of the access permissions.</p>
+
+<aside class="notice">
+Instances MUST be able to handle not accessible remote storages gracefully even when a folder has not been unshared. The unshared endpoint is there to indicate to a remote host that a storage has finally removed and is not just temporarily unavailable.
+</aside>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Assuming a provider wants to unshare the share of the file sent to the <code class="prettyprint">share</code> endpoint (<code class="prettyprint">remoteId: 6</code>, <code class="prettyprint">token: TjuMOB1as7iZ1c6</code>) the following request needs to be sent to the receiver (<code class="prettyprint">http://receiver.example.org</code>): </p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/cloud/shares/8/unshare?format=json</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">receiver.example.org </span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">21</span>
+
+token=kW1gR9TRKXW9Jwk
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.com/{share}/{remoteId}/unshare</code></p>
+
+<h3 id="url-parameters">URL parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>remoteId</td>
+<td>Received <code class="prettyprint">remoteId</code> of the share.</td>
+</tr>
+</tbody></table>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>token</td>
+<td></td>
+<td>Unique and secret token used to access the file.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response MUST in any case be a OCS success message even if the deny did not work. The only exception being 503 when Federated Sharing is not enabled.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>503</td>
+<td>If the server does not support Federated Sharing (i.e. disabled by administrator)</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
+</aside>
+
+<h2 id="accessing-shared-files">Accessing shared files</h2>
+
+<blockquote>
+<p>To access the file <code class="prettyprint">sharedfile.txt</code> of the federated share with the token <code class="prettyprint">kW1gR9TRKXW9Jwk</code> the following request has to be sent. Note that as password the base64 representation of <code class="prettyprint">kW1gR9TRKXW9Jwk:</code> is used. The ending <code class="prettyprint">:</code> is required.</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/public.php/webdav/sharedfile.txt</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic a1cxZ1I5VFJLWFc5SndrOg==</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p>Shares files may be accessed using WebDAV (<a href="https://tools.ietf.org/html/rfc4918">RFC 4918</a>) under the specified <code class="prettyprint">webdav</code> endpoint using HTTP Basic Authentication.</p>
+
+<p>The credentials will be of the value <code class="prettyprint">token:</code>, note the empty password field.</p>
+
+<h1 id="sharing">Sharing</h1>
+
+<blockquote>
+<p>A valid service definition looks as following:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"SHARING"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"share"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/apps/files_sharing/api/v1/shares"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>The <code class="prettyprint">SHARING</code> module allows to handle file sharing on the same cloud instance. It offers the following functions:</p>
+
+<ol>
+<li>Get a list of shares (<code class="prettyprint">share</code>)</li>
+<li>Get a list of shared files in a folder (<code class="prettyprint">share</code>) </li>
+<li>Get information about a specific share (<code class="prettyprint">share</code>)</li>
+<li>Create a new share (<code class="prettyprint">share</code>)</li>
+<li>Delete an existing share (<code class="prettyprint">share</code>)</li>
+<li>Update an existing share (<code class="prettyprint">share</code>)</li>
+</ol>
+
+<h2 id="get-list-of-shares">Get list of shares</h2>
+
+<p>Get a list of all shared files for the currently logged-in user.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Lists all shares of the user admin with the password admin:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.org/{share}</code></p>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>shared_with_me</td>
+<td><code class="prettyprint">false</code></td>
+<td>Whether files shared with the user should get displayed. Defaults to <code class="prettyprint">false</code>, <code class="prettyprint">true</code> to only display shares that the user received.</td>
+</tr>
+<tr>
+<td>path</td>
+<td>&rsquo;/&rsquo;</td>
+<td>Path to folder, if empty no restriction is set.</td>
+</tr>
+<tr>
+<td>reshares</td>
+<td><code class="prettyprint">false</code></td>
+<td> Whether reshares should get returned.</td>
+</tr>
+<tr>
+<td>subfiles</td>
+<td><code class="prettyprint">false</code></td>
+<td> Whether all shares within the folder should be returned.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case there are shares a successful OCS response object MUST be returned by the server, the shares MUST be embedded in the data element and at least consist of the following elements:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="nt">&lt;element&gt;</span>
+  <span class="c">&lt;!-- Unique identified of the share (integer) --&gt;</span>
+  <span class="nt">&lt;id&gt;</span>1<span class="nt">&lt;/id&gt;</span>
+  <span class="c">&lt;!-- The item_type either "file" or "folder" (string) --&gt;</span>
+  <span class="nt">&lt;item_type&gt;</span>file<span class="nt">&lt;/item_type&gt;</span>
+  <span class="c">&lt;!-- '0' = user; '1' = group; '3' = public link (integer) --&gt;</span>
+  <span class="nt">&lt;share_type&gt;</span>2<span class="nt">&lt;/share_type&gt;</span>
+   <span class="c">&lt;!-- In case when shared with a user or a group the name (string) --&gt;</span>
+  <span class="nt">&lt;share_with&gt;</span>Rachel<span class="nt">&lt;/share_with&gt;</span>
+  <span class="c">&lt;!-- Path where the share is located (string) --&gt;</span>
+  <span class="nt">&lt;path&gt;</span>/sharedFile.txt<span class="nt">&lt;/path&gt;</span>
+  <span class="c">&lt;!-- Permissions: 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1) (integer) --&gt;</span>
+  <span class="nt">&lt;permissions&gt;</span>1<span class="nt">&lt;/permissions&gt;</span>
+  <span class="c">&lt;!-- Date when the share should expire (ISO 8601) --&gt;</span>
+  <span class="nt">&lt;expiration&gt;</span>2015-06-12<span class="nt">&lt;/expiration&gt;</span>
+  <span class="c">&lt;!-- Unique token that may be used to access the file in case of a public link (string) --&gt;</span>
+  <span class="nt">&lt;token&gt;&lt;/token&gt;</span>
+  <span class="c">&lt;!-- Unique token that may be used to access the file in case of a public link (string) --&gt;</span>
+  <span class="nt">&lt;uid_owner&gt;</span>Oscar<span class="nt">&lt;/uid_owner&gt;</span>
+  <span class="c">&lt;!-- Human readable name, may be chosen by the user itself (string) --&gt;</span>
+  <span class="nt">&lt;displayname_owner&gt;</span>Oscar Meyer<span class="nt">&lt;/displayname_owner&gt;</span>
+<span class="nt">&lt;/element&gt;</span>
+</code></pre>
+
+<p>The expected response MUST in any case be a OCS success message containing the share data. </p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Not a directory (if the <code class="prettyprint">subfile</code> argument was used)</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User has no shared files or folder does not exist.</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-information-about-a-share">Get information about a share</h2>
+
+<p>Get information about a specific share using the share id.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request would request information about the share with the ID &ldquo;1&rdquo; under the context of the user &ldquo;admin&rdquo;.</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.com/{share}/{shareId}</code></p>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>shareId</td>
+<td></td>
+<td>ID of the requested share.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message with the following data structure is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="nt">&lt;element&gt;</span>
+  <span class="c">&lt;!-- Unique identified of the share (integer) --&gt;</span>
+  <span class="nt">&lt;id&gt;</span>1<span class="nt">&lt;/id&gt;</span>
+  <span class="c">&lt;!-- The item_type either "file" or "folder" (string) --&gt;</span>
+  <span class="nt">&lt;item_type&gt;</span>file<span class="nt">&lt;/item_type&gt;</span>
+  <span class="c">&lt;!-- '0' = user; '1' = group; '3' = public link (integer) --&gt;</span>
+  <span class="nt">&lt;share_type&gt;</span>2<span class="nt">&lt;/share_type&gt;</span>
+   <span class="c">&lt;!-- In case when shared with a user or a group the name (string) --&gt;</span>
+  <span class="nt">&lt;share_with&gt;</span>Rachel<span class="nt">&lt;/share_with&gt;</span>
+  <span class="c">&lt;!-- Path where the share is located (string) --&gt;</span>
+  <span class="nt">&lt;path&gt;</span>/sharedFile.txt<span class="nt">&lt;/path&gt;</span>
+  <span class="c">&lt;!-- Permissions: 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1) (integer) --&gt;</span>
+  <span class="nt">&lt;permissions&gt;</span>1<span class="nt">&lt;/permissions&gt;</span>
+  <span class="c">&lt;!-- Date when the share should expire (ISO 8601) --&gt;</span>
+  <span class="nt">&lt;expiration&gt;</span>2015-06-12<span class="nt">&lt;/expiration&gt;</span>
+  <span class="c">&lt;!-- Unique token that may be used to access the file in case of a public link (string) --&gt;</span>
+  <span class="nt">&lt;token&gt;&lt;/token&gt;</span>
+  <span class="c">&lt;!-- Unique token that may be used to access the file in case of a public link (string) --&gt;</span>
+  <span class="nt">&lt;uid_owner&gt;</span>Oscar<span class="nt">&lt;/uid_owner&gt;</span>
+  <span class="c">&lt;!-- Human readable name, may be chosen by the user itself (string) --&gt;</span>
+  <span class="nt">&lt;displayname_owner&gt;</span>Oscar Meyer<span class="nt">&lt;/displayname_owner&gt;</span>
+<span class="nt">&lt;/element&gt;</span>
+</code></pre>
+
+<p>The expected response is, in case of success, a OCS success message containing the data structure. In error cases the following OCS status codes MUST be used:</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Share does not exist.</td>
+</tr>
+</tbody></table>
+
+<p>In case of an error consumers SHOULD be made aware of the error. The OCS message MUST be used by the endpoint to specify a proper error message that can be used to analyze issues.</p>
+
+<h2 id="create-a-new-share">Create a new share</h2>
+
+<p>Shares a file or folder with an user on the same instance.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request will share the file <code class="prettyprint">/welcome.txt</code> of the user <code class="prettyprint">admin</code> with the user <code class="prettyprint">test</code>:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">44</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+
+path=/welcome.txt&amp;shareType=0&amp;shareWith=test
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.com/{share}</code></p>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>path</td>
+<td></td>
+<td>Absolute path to the file/folder which should be shared.</td>
+</tr>
+<tr>
+<td>shareType</td>
+<td></td>
+<td>0 = user; 1 = group; 3 = public link</td>
+</tr>
+<tr>
+<td>shareWith</td>
+<td></td>
+<td>User or group id with which the file or folder should be shared.</td>
+</tr>
+<tr>
+<td>publicUpload</td>
+<td><code class="prettyprint">false</code></td>
+<td>Whether to allow public upload to a public shared folder.</td>
+</tr>
+<tr>
+<td>password</td>
+<td></td>
+<td>Password to protect a publicly shared file with.</td>
+</tr>
+<tr>
+<td>permissions</td>
+<td>31</td>
+<td>1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case the share has been created a successful OCS response object MUST be returned by the server, the shares MUST be embedded in the data element and at least consist of the following elements:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="nt">&lt;element&gt;</span>
+  <span class="c">&lt;!-- Unique identified of the share (integer) --&gt;</span>
+  <span class="nt">&lt;id&gt;</span>1<span class="nt">&lt;/id&gt;</span>
+  <span class="c">&lt;!-- The item_type either "file" or "folder" (string) --&gt;</span>
+  <span class="nt">&lt;item_type&gt;</span>file<span class="nt">&lt;/item_type&gt;</span>
+  <span class="c">&lt;!-- '0' = user; '1' = group; '3' = public link (integer) --&gt;</span>
+  <span class="nt">&lt;share_type&gt;</span>2<span class="nt">&lt;/share_type&gt;</span>
+   <span class="c">&lt;!-- In case when shared with a user or a group the name (string) --&gt;</span>
+  <span class="nt">&lt;share_with&gt;</span>Rachel<span class="nt">&lt;/share_with&gt;</span>
+  <span class="c">&lt;!-- Path where the share is located (string) --&gt;</span>
+  <span class="nt">&lt;path&gt;</span>/sharedFile.txt<span class="nt">&lt;/path&gt;</span>
+  <span class="c">&lt;!-- Permissions: 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1) (integer) --&gt;</span>
+  <span class="nt">&lt;permissions&gt;</span>1<span class="nt">&lt;/permissions&gt;</span>
+  <span class="c">&lt;!-- Date when the share should expire (ISO 8601) --&gt;</span>
+  <span class="nt">&lt;expiration&gt;</span>2015-06-12<span class="nt">&lt;/expiration&gt;</span>
+  <span class="c">&lt;!-- Unique token that may be used to access the file in case of a public link (string) --&gt;</span>
+  <span class="nt">&lt;token&gt;&lt;/token&gt;</span>
+  <span class="c">&lt;!-- Unique token that may be used to access the file in case of a public link (string) --&gt;</span>
+  <span class="nt">&lt;uid_owner&gt;</span>Oscar<span class="nt">&lt;/uid_owner&gt;</span>
+  <span class="c">&lt;!-- Human readable name, may be chosen by the user itself (string) --&gt;</span>
+  <span class="nt">&lt;displayname_owner&gt;</span>Oscar Meyer<span class="nt">&lt;/displayname_owner&gt;</span>
+<span class="nt">&lt;/element&gt;</span>
+</code></pre>
+
+<p>The expected response is, in case of success, a OCS success message with the defined data structure. In error cases the following OCS status codes MUST be used:</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Unknown share type.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>File couldnt get shared.</td>
+</tr>
+</tbody></table>
+
+<h2 id="unshare-an-existing-share">Unshare an existing share</h2>
+
+<p>Unshares a shared file or folder.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request will delete the share with the id <code class="prettyprint">1</code> of the user <code class="prettyprint">admin</code>:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p><code class="prettyprint">DELETE http://example.com/{share}/{shareId}</code></p>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>shareId</td>
+<td></td>
+<td>ID of the share to revoke.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response is, in case of success, a OCS success message with the defined data structure. In error cases the following OCS status codes MUST be used:</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Share could not get unshared.</td>
+</tr>
+</tbody></table>
+
+<h2 id="update-an-existing-share">Update an existing share</h2>
+
+<p>Updates an existing share such as adjusting the permissions or the password.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request will set the permissions of the share with the id <code class="prettyprint">9</code> to `31:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">PUT</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares/9</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">14</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+
+permissions=31
+</code></pre>
+
+<p><code class="prettyprint">PUT http://example.com/{share}/{shareId}</code></p>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>shareId</td>
+<td></td>
+<td>ID of the share to update.</td>
+</tr>
+</tbody></table>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>publicUpload</td>
+<td><code class="prettyprint">false</code></td>
+<td>Whether to allow public upload to a public shared folder</td>
+</tr>
+<tr>
+<td>password</td>
+<td></td>
+<td>Password to protect a publicly shared file with</td>
+</tr>
+<tr>
+<td>permissions</td>
+<td></td>
+<td>1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response is, in case of success, a OCS success message with the defined data structure. In error cases the following OCS status codes MUST be used:</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Wrong or no update parameter given.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Public upload disabled by the admin.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Could not update share.</td>
+</tr>
+</tbody></table>
+
+<h1 id="activity">Activity</h1>
+
+<blockquote>
+<p>A valid service definition looks as following:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"ACTIVITY"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"list"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/activity"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>The &ldquo;ACTIVITY&rdquo; module allows consumers  to show a list of actions happening on the cloud service. This can for example be a collection of recently created or deleted files. This module has only a <code class="prettyprint">list</code> endpoint used to gather this list.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request would request the data of the user <code class="prettyprint">admin</code>:
+<code class="prettyprint">http
+GET /ocs/v2.php/cloud/activity HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+</code></p>
+</blockquote>
+
+<p><code class="prettyprint">POST http://example.com/{list}</code></p>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>start</td>
+<td>0</td>
+<td>Optional value with which event to start.</td>
+</tr>
+<tr>
+<td>count</td>
+<td>30</td>
+<td>Optional value on how many values should get returned.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="nt">&lt;element&gt;</span>
+   <span class="c">&lt;!-- Unique identifier for the event --&gt;</span>
+   <span class="nt">&lt;id&gt;</span>2<span class="nt">&lt;/id&gt;</span>
+   <span class="c">&lt;!-- Subject of the mes--&gt;</span>
+   <span class="nt">&lt;subject&gt;</span>You deleted ownCloudUserManual.pdf<span class="nt">&lt;/subject&gt;</span>
+   <span class="c">&lt;!-- More descriptive text of the action (optional) --&gt;</span>
+   <span class="nt">&lt;message&gt;&lt;/message&gt;</span>
+   <span class="c">&lt;!-- The affected file --&gt;</span>
+   <span class="nt">&lt;file&gt;</span>/ownCloudUserManual.pdf<span class="nt">&lt;/file&gt;</span>
+   <span class="c">&lt;!-- Link to the file or folder --&gt;</span>
+   <span class="nt">&lt;link&gt;</span>http://example.org/index.php/apps/files?dir=%2F<span class="nt">&lt;/link&gt;</span>
+   <span class="c">&lt;!-- Timestamp when the event happened --&gt;</span>
+   <span class="nt">&lt;date&gt;</span>2015-06-10T09:42:58+00:00<span class="nt">&lt;/date&gt;</span>
+  <span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;element&gt;</span>
+   <span class="nt">&lt;id&gt;</span>1<span class="nt">&lt;/id&gt;</span>
+   <span class="nt">&lt;subject&gt;</span>You created test.txt<span class="nt">&lt;/subject&gt;</span>
+   <span class="nt">&lt;message&gt;&lt;/message&gt;</span>
+   <span class="nt">&lt;file&gt;</span>/test.txt<span class="nt">&lt;/file&gt;</span>
+   <span class="nt">&lt;link&gt;</span>http://example.org/index.php/apps/files?dir=%2F<span class="nt">&lt;/link&gt;</span>
+   <span class="nt">&lt;date&gt;</span>2015-06-10T09:22:38+00:00<span class="nt">&lt;/date&gt;</span>
+  <span class="nt">&lt;/element&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The response MUST be a OCS success message or a 993 forbidden statuscode if the user is not authenticated. In case of a success the response must contain the defined data blob.</p>
+
+<p>In case a start or count parameter is specified endpoints MUST return the newest entries first to allow consumers to chunk the event transmission.</p>
+
+<h1 id="provisioning-experimental">PROVISIONING [Experimental]</h1>
+
+<p>The &ldquo;PROVISONING&rdquo; module allows management of users and groups on a service provider. Specifically it supports the following functionalities:</p>
+
+<ol>
+<li>Managing users (<code class="prettyprint">user</code>)
+
+<ul>
+<li>Create users</li>
+<li>Edit users</li>
+<li>Delete users</li>
+<li>List users</li>
+</ul></li>
+<li>Managing groups (<code class="prettyprint">groups</code>)
+
+<ul>
+<li>Create groups</li>
+<li>Manage subadmin privileges</li>
+<li>Manage group members</li>
+<li>Delete groups</li>
+<li>List groups</li>
+</ul></li>
+<li>Managing applications (<code class="prettyprint">apps</code>)
+
+<ul>
+<li>Enable applications</li>
+<li>Delete applications</li>
+<li>List applications</li>
+</ul></li>
+</ol>
+
+<p>A provider service definition MUST look like the following (the endpoint URI MAY be changed by providers):</p>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"PROVISIONING"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/users"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"groups"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/groups"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"apps"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/apps"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>This module is likely to require administrative privileges for accessing and service providers SHOULD review their implementation carefully.</p>
+
+<h3 id="create-user">Create user</h3>
+
+<p>Creates a new user on the server.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}</code></li>
+<li>HTTP method: POST</li>
+<li>Scope: Authenticated</li>
+<li>Required arguments:
+
+<ul>
+<li><code class="prettyprint">userid</code>: Username to create (string) </li>
+<li><code class="prettyprint">password</code>: Password of the user (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>400: invalid input data</li>
+<li>401: authentication was not successful</li>
+<li>409: username already exists</li>
+<li>500: unknown error occurred whilst adding the user</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the user has been created successfully a successful OCS response object MUST be returned by the server.
+The status code for a successful operation is 201/Created.</p>
+
+<h3 id="get-users">Get users</h3>
+
+<p>Retrieves a list of users on the server.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>Optional arguments:
+
+<ul>
+<li><code class="prettyprint">search</code>: search string (string)</li>
+<li><code class="prettyprint">limit</code>: limit value (int)</li>
+<li><code class="prettyprint">offset</code>: offset value (int)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of users such as:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="nt">&lt;users&gt;</span>
+   <span class="c">&lt;!-- List of users on the instance --&gt;</span>
+   <span class="nt">&lt;element&gt;</span>Frank<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>admin<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>test<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>test1<span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;/users&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="get-a-user">Get a user</h3>
+
+<p>Retrieves information about a single user.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to get (string)</li>
+</ul></li>
+<li>Optional arguments:
+
+<ul>
+<li><code class="prettyprint">search</code>: search string (string)</li>
+<li><code class="prettyprint">limit</code>: limit value (int)</li>
+<li><code class="prettyprint">offset</code>: offset value (int)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+<li>404: user not found</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a blob as following, values MAY be empty or more values MAY get returned:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="c">&lt;!-- Email address of the user (string) --&gt;</span>
+  <span class="nt">&lt;email&gt;</span>user@example.org<span class="nt">&lt;/email&gt;</span>
+  <span class="c">&lt;!-- Whether the user is enabled (boolean) --&gt;</span>
+  <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+  <span class="nt">&lt;quota&gt;</span>
+   <span class="c">&lt;!-- Free storage in byte (int) --&gt;</span>
+   <span class="nt">&lt;free&gt;</span>80<span class="nt">&lt;/free&gt;</span>
+   <span class="c">&lt;!-- Used storage in byte (int) --&gt;</span>
+   <span class="nt">&lt;used&gt;</span>20<span class="nt">&lt;/used&gt;</span>
+   <span class="c">&lt;!-- Total storage, free + used in byte (int) --&gt;</span>
+   <span class="nt">&lt;total&gt;</span>200<span class="nt">&lt;/total&gt;</span>
+   <span class="c">&lt;!-- Percentage of used storage (int) --&gt;</span>
+   <span class="nt">&lt;relative&gt;</span>20<span class="nt">&lt;/relative&gt;</span>
+  <span class="nt">&lt;/quota&gt;</span>
+  <span class="c">&lt;!-- Human displayable username, may be chosen by the user (string) --&gt;</span>
+  <span class="nt">&lt;displayname&gt;</span>Hans User<span class="nt">&lt;/displayname&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="edit-user-attributes">Edit user attributes</h3>
+
+<p>Edits attributes related to a user. Users are able to edit email, displayname and password; admins can also edit the quota value.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}</code></li>
+<li>HTTP method: PUT</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to edit (string)</li>
+</ul></li>
+<li>Required arguments:
+
+<ul>
+<li><code class="prettyprint">key</code>: te field to edit (email, quota, displayname, password) (string)</li>
+<li><code class="prettyprint">value</code>: the new value for the field (mixed)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>400: invalid input data</li>
+<li>400: quote is not a valid value</li>
+<li>401: authentication was not successful or invalid key</li>
+<li>404: user not found</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server.</p>
+
+<h3 id="delete-user">Delete user</h3>
+
+<p>Deletes a user from the instance.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to delete (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful or user is not permitted to perform this action</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server.
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
+The status code in case of a successful operation is 204/No Content.</p>
+
+<h3 id="get-group-memberships">Get group memberships</h3>
+
+<p>Retrieves a list of groups the specified user is member of.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/groups</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to delete (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful or user is not permitted to perform this action</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of users such as:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+  <span class="nt">&lt;meta&gt;</span>
+    <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+    <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;/meta&gt;</span>
+  <span class="nt">&lt;data&gt;</span>
+    <span class="nt">&lt;groups&gt;</span>
+      <span class="c">&lt;!-- List of group memberships --&gt;</span>
+      <span class="nt">&lt;element&gt;</span>admin<span class="nt">&lt;/element&gt;</span>
+      <span class="nt">&lt;element&gt;</span>group1<span class="nt">&lt;/element&gt;</span>
+    <span class="nt">&lt;/groups&gt;</span>
+  <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="add-user-to-group">Add user to group</h3>
+
+<p>Adds the specified user to the specified group.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/groups</code></li>
+<li>HTTP method: POST</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to add to a group (string)</li>
+</ul></li>
+<li>Required arguments:
+
+<ul>
+<li><code class="prettyprint">groupid</code>: Group Id that the user should get added to (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>200: successful</li>
+<li>400: no group specified</li>
+<li>400: group does not exist</li>
+<li>400: user does not exist</li>
+<li>400: failed to add user to group</li>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server.
+The status code for a successful operation is 201/Created.</p>
+
+<h3 id="remove-user-from-group">Remove user from group</h3>
+
+<p>Removes the specified user to the specified group.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/groups</code></li>
+<li>HTTP method: DELETE</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to add to a group (string)</li>
+</ul></li>
+<li>Required parameters:
+
+<ul>
+<li><code class="prettyprint">groupid</code>: Group Id to remove the membership from (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>200: successful</li>
+<li>400: no group specified</li>
+<li>400: group doesn&rsquo;t exist</li>
+<li>401: authentication was not successful</li>
+<li>403: insufficient privileges</li>
+<li>500: failed to remove user from group</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server.
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
+The status code in case of a successful operation is 204/No Content.</p>
+
+<h3 id="promote-user-to-subadmin-of-group">Promote user to subadmin of group</h3>
+
+<p>Makes a user the subadmin of a group. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/subadmin</code></li>
+<li>HTTP method: POST</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to promote (string)</li>
+</ul></li>
+<li>Required parameters:
+
+<ul>
+<li><code class="prettyprint">groupid</code>: Group id of which the user shall get subadmin privileges (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>201: successful</li>
+<li>404: user does not exist</li>
+<li>404: group does not exist</li>
+<li>401: authentication was not successful</li>
+<li>500: unknown failure</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server.</p>
+
+<h3 id="remove-subadmin-privileges-of-user">Remove subadmin privileges of user</h3>
+
+<p>Removes the subadmin rights for the user specified from the group specified. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/subadmin</code></li>
+<li>HTTP method: DELETE</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to demote (string)</li>
+</ul></li>
+<li>Required parameters:
+
+<ul>
+<li><code class="prettyprint">groupid</code>: Group id of which the user shall get removed the subadmin privileges (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>204: successful</li>
+<li>401: authentication was not successful</li>
+<li>500: unknown failure</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server.
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
+The status code in case of a successful operation is 204/No Content.</p>
+
+<h3 id="get-subadmin-privileges-of-user">Get subadmin privileges of user</h3>
+
+<p>Returns the groups in which the user is a subadmin. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/subadmin</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">uid</code>: Identifier of the user to get information from (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>200: successful</li>
+<li>401: authentication was not successful</li>
+<li>404: user does not exist</li>
+<li>500: unknown failure</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of groups such as:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+  <span class="nt">&lt;meta&gt;</span>
+      <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+      <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+    <span class="nt">&lt;message/&gt;</span>
+  <span class="nt">&lt;/meta&gt;</span>
+  <span class="nt">&lt;data&gt;</span>
+    <span class="c">&lt;!-- List of groups the user is subadmin of --&gt;</span>
+    <span class="nt">&lt;element&gt;</span>testgroup<span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="get-groups-on-the-server">Get groups on the server</h3>
+
+<p>Retrieves a list of groups from the cloud server. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{groups}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>Optional arguments:
+
+<ul>
+<li><code class="prettyprint">search</code>:  search string (string)</li>
+<li><code class="prettyprint">limit</code>: limit value (int)</li>
+<li><code class="prettyprint">offset</code>: offset value (int)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of groups such as:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+  <span class="nt">&lt;meta&gt;</span>
+    <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+    <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;/meta&gt;</span>
+  <span class="nt">&lt;data&gt;</span>
+    <span class="nt">&lt;groups&gt;</span>
+      <span class="c">&lt;!-- List of groups on the server --&gt;</span>
+      <span class="nt">&lt;element&gt;</span>admin<span class="nt">&lt;/element&gt;</span>
+      <span class="nt">&lt;element&gt;</span>Support staff<span class="nt">&lt;/element&gt;</span>
+    <span class="nt">&lt;/groups&gt;</span>
+  <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="create-a-new-group">Create a new group</h3>
+
+<p>Creates a new group. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{groups}</code></li>
+<li>HTTP method: POST</li>
+<li>Scope: Authenticated</li>
+<li>Required arguments:
+
+<ul>
+<li><code class="prettyprint">groupid</code>: identifier of the to creating group (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>201: successful</li>
+<li>400: invalid input data</li>
+<li>401: authentication was not successful</li>
+<li>409: group already exists</li>
+<li>500: failed to add the group</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server.</p>
+
+<h3 id="get-members-of-a-group">Get members of a group</h3>
+
+<p>Retrieves a list of group members. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{groups}/{groupId}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">groupId</code>: identifier of group (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of groups such as:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+  <span class="nt">&lt;meta&gt;</span>
+    <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+    <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;/meta&gt;</span>
+  <span class="nt">&lt;data&gt;</span>
+    <span class="c">&lt;!-- List of groups on the server --&gt;</span>
+    <span class="nt">&lt;users&gt;</span>
+      <span class="nt">&lt;element&gt;</span>Frank<span class="nt">&lt;/element&gt;</span>
+    <span class="nt">&lt;/users&gt;</span>
+  <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="get-subadmins-of-a-group">Get subadmins of a group</h3>
+
+<p>Returns subadmins of the group. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{groups}/{groupId}/subadmins</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">groupId</code>: identifier of group (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+<li>404: group does not exist</li>
+<li>500: unknown failure</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of subadmins such as:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+  <span class="nt">&lt;meta&gt;</span>
+    <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+    <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;/meta&gt;</span>
+  <span class="nt">&lt;data&gt;</span>
+    <span class="nt">&lt;users&gt;</span>
+      <span class="c">&lt;!-- List of subadmins on the server  --&gt;</span>
+      <span class="nt">&lt;element&gt;</span>Tom<span class="nt">&lt;/element&gt;</span>
+    <span class="nt">&lt;/users&gt;</span>
+  <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="delete-a-group">Delete a group</h3>
+
+<p>Removes a group. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{groups}/{groupId}</code></li>
+<li>HTTP method: DELETE</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">groupId</code>: identifier of group (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+<li>500: failed to delete group</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server.
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
+The status code in case of a successful operation is 204/No Content.</p>
+
+<h3 id="get-list-of-installed-apps">Get list of installed apps</h3>
+
+<p>Returns a list of apps installed on the cloud server. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{apps}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>400: invalid input data</li>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of subadmins such as:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+  <span class="nt">&lt;meta&gt;</span>
+    <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+    <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;/meta&gt;</span>
+  <span class="nt">&lt;data&gt;</span>
+    <span class="nt">&lt;apps&gt;</span>
+      <span class="c">&lt;!-- List of apps on the server  --&gt;</span>
+      <span class="nt">&lt;element&gt;</span>files<span class="nt">&lt;/element&gt;</span>
+      <span class="nt">&lt;element&gt;</span>provisioning_api<span class="nt">&lt;/element&gt;</span>
+    <span class="nt">&lt;/apps&gt;</span>
+  <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="get-application-information">Get application information</h3>
+
+<p>Provides information about a specific application. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{apps}/{appId}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">appId</code>: identifier of app to request information from (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+<li>404: application not found</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of information about the app, including at least:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+  <span class="nt">&lt;meta&gt;</span>
+    <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+    <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;/meta&gt;</span>
+  <span class="nt">&lt;data&gt;</span>
+    <span class="c">&lt;!-- Id of the application --&gt;</span>
+    <span class="nt">&lt;id&gt;</span>files<span class="nt">&lt;/id&gt;</span>
+    <span class="c">&lt;!-- Name of the application --&gt;</span>
+    <span class="nt">&lt;name&gt;</span>Files<span class="nt">&lt;/name&gt;</span>
+    <span class="c">&lt;!-- Description of an application --&gt;</span>
+    <span class="nt">&lt;description&gt;</span>File Management<span class="nt">&lt;/description&gt;</span>
+  <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<h3 id="enable-application">Enable application</h3>
+
+<p>Enable an app. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{apps}/{appId}</code></li>
+<li>HTTP method: POST</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">appId</code>: identifier of app to enable (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server.</p>
+
+<h3 id="disable-application">Disable application</h3>
+
+<p>Disables the specified app. Authentication is done by sending a Basic HTTP Authorization header.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{apps}/{appId}</code></li>
+<li>HTTP method: DELETE</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">appId</code>: identifier of app to delete (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="errors">Errors</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server.
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
+The status code in case of a successful operation is 204/No Content.</p>
+
+<p>Syntax: ocs/v2.php/cloud/apps/{appid}</p>
+
+<h1 id="private-data-experimental">Private Data [Experimental]</h1>
+
+<blockquote>
+<p>A valid service definition looks as following:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"PRIVATE_DATA"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"store"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/privatedata/setattribute"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"read"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/privatedata/getattribute"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"delete"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/privatedata/deleteattribute"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>The <code class="prettyprint">PRIVATE_DATA</code> module allows consumers to store data in a key-value storage. The store supports multiple sub-stores. This module handles the following tasks:</p>
+
+<ol>
+<li>Storing values in the store (&ldquo;store&rdquo;)</li>
+<li>Reading data from the store (&ldquo;read&rdquo;)</li>
+<li>Deleting data from the store (&ldquo;delete&rdquo;)</li>
+</ol>
+
+<p>In case of a server error or connection problem consumers MUST handle this gracefully.</p>
+
+<h2 id="set-value">Set value</h2>
+
+<p>Sets a value in the key-value store for the currently logged-in user.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{store}/{storeName}/{key}</code></li>
+<li>HTTP method: POST</li>
+<li>Scope: Authenticated</li>
+<li>Arguments:</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">storeName</code>: Name of the store (string)</li>
+<li><code class="prettyprint">key</code>: Name of they key (string)</li>
+</ul></li>
+<li>Required arguments:
+
+<ul>
+<li><code class="prettyprint">value</code>: Value that should get stored (string)</li>
+</ul></li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>The response MUST be a OCS success message.</p>
+
+<h3 id="get-all-values-of-store">Get all values of store</h3>
+
+<p>Get all key-values stored within a specific store for the currently logged-in user.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{store}/{storeName}/{key}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">storeName</code>: Name of the store (string)</li>
+<li><code class="prettyprint">key</code>: Name of they key (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="error">Error</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>The response MUST be a OCS success message and MUST contain a <code class="prettyprint">data</code> array containing the elements, for example:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="c">&lt;!-- List of stored values --&gt;</span>
+  <span class="nt">&lt;element&gt;</span>
+   <span class="c">&lt;!-- Key of the stored value --&gt;</span>
+   <span class="nt">&lt;key&gt;</span>MyKey<span class="nt">&lt;/key&gt;</span>
+   <span class="c">&lt;!-- Store in which the data is stored, internally represented as "app" --&gt;</span>
+   <span class="nt">&lt;app&gt;</span>MyStore<span class="nt">&lt;/app&gt;</span>
+   <span class="c">&lt;!-- Value to store --&gt;</span>   
+   <span class="nt">&lt;value&gt;</span>ValueToStore<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;element&gt;</span>
+   <span class="nt">&lt;key&gt;</span>AnotherKey<span class="nt">&lt;/key&gt;</span>
+   <span class="nt">&lt;app&gt;</span>MyStore<span class="nt">&lt;/app&gt;</span>
+   <span class="nt">&lt;value&gt;</span>AnotherValue<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/element&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>In case a store does not contain any values providers MUST return an empty data representation but MUST NOT return any error.</p>
+
+<h2 id="get-value">Get value</h2>
+
+<p>Get the value of a key stored within a specific store for the currently logged-in user.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{read}/{storeName}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">storeName</code>: Name of the store (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="error">Error</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>The response MUST be a OCS success message and MUST contain a <code class="prettyprint">data</code> array containing the elements, for example:</p>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="nt">&lt;element&gt;</span>
+   <span class="c">&lt;!-- Key of the stored value --&gt;</span>
+   <span class="nt">&lt;key&gt;</span>MyKey<span class="nt">&lt;/key&gt;</span>
+   <span class="c">&lt;!-- Store in which the data is stored, internally represented as "app" --&gt;</span>
+   <span class="nt">&lt;app&gt;</span>MyStore<span class="nt">&lt;/app&gt;</span>
+   <span class="c">&lt;!-- Value to store --&gt;</span>   
+   <span class="nt">&lt;value&gt;</span>ValueToStore<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/element&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>In case a key does not contain a value providers MUST return an empty data representation but MUST NOT return any error.</p>
+
+<h2 id="delete-entry">Delete entry</h2>
+
+<p>Get the value of a key stored within a specific store for the currently logged-in user.</p>
+
+<h4 id="request">Request</h4>
+
+<ul>
+<li>URL structure: <code class="prettyprint">example.org/{delete}/{storeName}/{key}</code></li>
+<li>HTTP method: GET</li>
+<li>Scope: Authenticated</li>
+<li>URL parameters:
+
+<ul>
+<li><code class="prettyprint">storeName</code>: Name of the store (string)</li>
+<li><code class="prettyprint">key</code>: Name of they key (string)</li>
+</ul></li>
+</ul>
+
+<h4 id="response">Response</h4>
+
+<h5 id="error">Error</h5>
+
+<ul>
+<li>401: authentication was not successful</li>
+</ul>
+
+<h5 id="success">Success</h5>
+
+<p>The response MUST be a OCS success message.</p>
+
+<h1 id="errors-amp-status-codes">Errors &amp; Status codes</h1>
+
+<p>OCS uses the following error codes returned as HTTP statuscode. The following status codes are reserved and MUST not be used for any other purposes. Other status codes indicate custom errors that can be used by modules. </p>
+
+<table><thead>
+<tr>
+<th>Statuscode</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication failed</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Unknown request</td>
 </tr>
 </tbody></table>
 
       </div>
       <div class="dark-box">
           <div class="lang-selector">
-                <a href="#" data-language-name="shell">shell</a>
-                <a href="#" data-language-name="ruby">ruby</a>
-                <a href="#" data-language-name="python">python</a>
+                <a href="#" data-language-name="Examples">Examples</a>
           </div>
       </div>
     </div>
