@@ -1361,7 +1361,25 @@ OCS-REQUEST: true
 
 <p>In case a start or count parameter is specified endpoints MUST return the newest entries first to allow consumers to chunk the event transmission.</p>
 
-<h1 id="provisioning-experimental">PROVISIONING [Experimental]</h1>
+<h1 id="provisoning-experimental">Provisoning [Experimental]</h1>
+
+<blockquote>
+<p>A valid service definition looks as following:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"PROVISIONING"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/users"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"groups"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/groups"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"apps"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/apps"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 
 <p>The &ldquo;PROVISONING&rdquo; module allows management of users and groups on a service provider. Specifically it supports the following functionalities:</p>
 
@@ -1392,143 +1410,208 @@ OCS-REQUEST: true
 </ul></li>
 </ol>
 
-<p>A provider service definition MUST look like the following (the endpoint URI MAY be changed by providers):</p>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"PROVISIONING"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-            </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="nt">"endpoints"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-                </span><span class="nt">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/users"</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"groups"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/groups"</span><span class="p">,</span><span class="w">
-                </span><span class="nt">"apps"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/ocs/v2.php/cloud/apps"</span><span class="w">
-            </span><span class="p">}</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
 <p>This module is likely to require administrative privileges for accessing and service providers SHOULD review their implementation carefully.</p>
 
-<h3 id="create-user">Create user</h3>
+<h2 id="create-user">Create user</h2>
 
 <p>Creates a new user on the server.</p>
 
-<h4 id="request">Request</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}</code></li>
-<li>HTTP method: POST</li>
-<li>Scope: Authenticated</li>
-<li>Required arguments:
+<blockquote>
+<p>Creates an user &ldquo;newUser&rdquo; with the password &ldquo;newPassword&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v2.php/cloud/users</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">35</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
 
-<ul>
-<li><code class="prettyprint">userid</code>: Username to create (string) </li>
-<li><code class="prettyprint">password</code>: Password of the user (string)</li>
-</ul></li>
-</ul>
+userid=newUser&amp;password=newPassword
+</code></pre>
 
-<h4 id="response">Response</h4>
+<p><code class="prettyprint">POST http://example.org/{user}</code></p>
 
-<h5 id="errors">Errors</h5>
+<h3 id="query-parameters">Query Parameters</h3>
 
-<ul>
-<li>400: invalid input data</li>
-<li>401: authentication was not successful</li>
-<li>409: username already exists</li>
-<li>500: unknown error occurred whilst adding the user</li>
-</ul>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userid</td>
+<td></td>
+<td>Username to create.</td>
+</tr>
+<tr>
+<td>password</td>
+<td></td>
+<td>Password of the user.</td>
+</tr>
+</tbody></table>
 
-<h5 id="success">Success</h5>
+<h3 id="response">Response</h3>
 
-<p>In case the user has been created successfully a successful OCS response object MUST be returned by the server.
-The status code for a successful operation is 201/Created.</p>
-
-<h3 id="get-users">Get users</h3>
-
-<p>Retrieves a list of users on the server.</p>
-
-<h4 id="request">Request</h4>
-
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>Optional arguments:
-
-<ul>
-<li><code class="prettyprint">search</code>: search string (string)</li>
-<li><code class="prettyprint">limit</code>: limit value (int)</li>
-<li><code class="prettyprint">offset</code>: offset value (int)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="errors">Errors</h5>
-
-<ul>
-<li>401: authentication was not successful</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of users such as:</p>
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
  <span class="nt">&lt;meta&gt;</span>
   <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
-  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response MUST, in case of success, be a OCS success message.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Invalid input data.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>409 </td>
+<td>Username already exists.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Unknown error occurred whilst adding the user. </td>
+</tr>
+</tbody></table>
+
+<h2 id="get-list-of-users">Get list of users</h2>
+
+<p>Retrieves a list of users on the server.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Request a list of users:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/cloud/users</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p><code class="prettyprint">GET http://example.org/{user}</code></p>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>search</td>
+<td></td>
+<td>Username to search for.</td>
+</tr>
+<tr>
+<td>limit</td>
+<td></td>
+<td>How many users to list.</td>
+</tr>
+<tr>
+<td>offset</td>
+<td></td>
+<td>Optional offset.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message with the mbedded user names is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
   <span class="nt">&lt;message/&gt;</span>
  <span class="nt">&lt;/meta&gt;</span>
  <span class="nt">&lt;data&gt;</span>
   <span class="nt">&lt;users&gt;</span>
-   <span class="c">&lt;!-- List of users on the instance --&gt;</span>
-   <span class="nt">&lt;element&gt;</span>Frank<span class="nt">&lt;/element&gt;</span>
    <span class="nt">&lt;element&gt;</span>admin<span class="nt">&lt;/element&gt;</span>
-   <span class="nt">&lt;element&gt;</span>test<span class="nt">&lt;/element&gt;</span>
-   <span class="nt">&lt;element&gt;</span>test1<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>JonDoe<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>JaneMeyer<span class="nt">&lt;/element&gt;</span>
   <span class="nt">&lt;/users&gt;</span>
  <span class="nt">&lt;/data&gt;</span>
 <span class="nt">&lt;/ocs&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
 
-<h3 id="get-a-user">Get a user</h3>
+<p>The expected response MUST, in case of success, be a OCS success message containing the user names as data element.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-a-user">Get a user</h2>
 
 <p>Retrieves information about a single user.</p>
 
-<h4 id="request">Request</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<blockquote>
+<p>To request information about an user called &ldquo;admin&rdquo; the following request would be valid: </p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/cloud/users/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to get (string)</li>
-</ul></li>
-<li>Optional arguments:
+<p><code class="prettyprint">GET http://example.com/{user}/{userId}</code></p>
 
-<ul>
-<li><code class="prettyprint">search</code>: search string (string)</li>
-<li><code class="prettyprint">limit</code>: limit value (int)</li>
-<li><code class="prettyprint">offset</code>: offset value (int)</li>
-</ul></li>
-</ul>
+<h3 id="url-parameters">URL parameters</h3>
 
-<h4 id="response">Response</h4>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td>User name of the user to lookup.</td>
+</tr>
+</tbody></table>
 
-<h5 id="errors">Errors</h5>
+<h3 id="response">Response</h3>
 
-<ul>
-<li>401: authentication was not successful</li>
-<li>404: user not found</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a blob as following, values MAY be empty or more values MAY get returned:</p>
+<blockquote>
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The data element MUST contain a blob as following, values MAY be empty or more values MAY get returned:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
  <span class="nt">&lt;meta&gt;</span>
@@ -1557,103 +1640,215 @@ The status code for a successful operation is 201/Created.</p>
 <span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
 
-<h3 id="edit-user-attributes">Edit user attributes</h3>
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User not found.</td>
+</tr>
+</tbody></table>
+
+<h2 id="edit-user-attributes">Edit user attributes</h2>
 
 <p>Edits attributes related to a user. Users are able to edit email, displayname and password; admins can also edit the quota value.</p>
 
-<h4 id="request">Request</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}</code></li>
-<li>HTTP method: PUT</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<blockquote>
+<p>Following request would change the password of the user &ldquo;admin&rdquo; to &ldquo;NewUserPassword&rdquo;;</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">PUT</span> <span class="nn">/master/ocs/v2.php/cloud/users/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">34</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
 
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to edit (string)</li>
-</ul></li>
-<li>Required arguments:
+key=password&amp;value=NewUserPassword
+</code></pre>
 
-<ul>
-<li><code class="prettyprint">key</code>: te field to edit (email, quota, displayname, password) (string)</li>
-<li><code class="prettyprint">value</code>: the new value for the field (mixed)</li>
-</ul></li>
-</ul>
+<p><code class="prettyprint">PUT http://example.com/{user}/{uid}</code></p>
 
-<h4 id="response">Response</h4>
+<h3 id="url-parameters">URL parameters</h3>
 
-<h5 id="errors">Errors</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td>User name of the user to edit.</td>
+</tr>
+</tbody></table>
 
-<ul>
-<li>400: invalid input data</li>
-<li>400: quote is not a valid value</li>
-<li>401: authentication was not successful or invalid key</li>
-<li>404: user not found</li>
-</ul>
+<h3 id="query-parameters">Query Parameters</h3>
 
-<h5 id="success">Success</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>key</td>
+<td></td>
+<td>Field to edit. One of &ldquo;email&rdquo;, &ldquo;quota&rdquo;, &ldquo;displayname&rdquo; or &ldquo;password&rdquo;.</td>
+</tr>
+<tr>
+<td>value</td>
+<td></td>
+<td>New value for the field.</td>
+</tr>
+</tbody></table>
 
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server.</p>
+<h3 id="response">Response</h3>
 
-<h3 id="delete-user">Delete user</h3>
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response MUST, in case of success, be a OCS success message.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Invalid input data.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>authentication was not successful or invalid key.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User not found.</td>
+</tr>
+</tbody></table>
+
+<h2 id="delete-user">Delete user</h2>
 
 <p>Deletes a user from the instance.</p>
 
-<h4 id="request">Request</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<blockquote>
+<p>Following request would delete the user named &ldquo;test&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/ocs/v2.php/cloud/users/test</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to delete (string)</li>
-</ul></li>
-</ul>
+<p><code class="prettyprint">DELETE http://example.com/{user}/{userId}</code></p>
 
-<h4 id="response">Response</h4>
+<h3 id="url-parameters">URL parameters</h3>
 
-<h5 id="errors">Errors</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td>User ID of the user to delete.</td>
+</tr>
+</tbody></table>
 
-<ul>
-<li>401: authentication was not successful or user is not permitted to perform this action</li>
-</ul>
+<h3 id="response">Response</h3>
 
-<h5 id="success">Success</h5>
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
 
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.</p>
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server.</p>
 
-<h3 id="get-group-memberships">Get group memberships</h3>
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful or user is not permitted to perform this action.</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-group-memberships">Get group memberships</h2>
 
 <p>Retrieves a list of groups the specified user is member of.</p>
 
-<h4 id="request">Request</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/groups</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<blockquote>
+<p>Following request would get the membership information of the user named &ldquo;test&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/cloud/users/test/group</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to delete (string)</li>
-</ul></li>
-</ul>
+<p><code class="prettyprint">GET http://example.com/{user}/{userId}/groups</code></p>
 
-<h4 id="response">Response</h4>
+<h3 id="url-parameters">URL parameters</h3>
 
-<h5 id="errors">Errors</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td>User ID of the user to delete.</td>
+</tr>
+</tbody></table>
 
-<ul>
-<li>401: authentication was not successful or user is not permitted to perform this action</li>
-</ul>
+<h3 id="response">Response</h3>
 
-<h5 id="success">Success</h5>
-
-<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of users such as:</p>
+<blockquote>
+<p>In case of success, a OCS success message with the list of group memberships is returned:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
   <span class="nt">&lt;meta&gt;</span>
@@ -1670,238 +1865,656 @@ The status code in case of a successful operation is 204/No Content.</p>
 <span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
 
-<h3 id="add-user-to-group">Add user to group</h3>
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the user groups.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful or user is not permitted to perform this action.</td>
+</tr>
+</tbody></table>
+
+<h2 id="add-user-to-group">Add user to group</h2>
 
 <p>Adds the specified user to the specified group.</p>
 
-<h4 id="request">Request</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/groups</code></li>
-<li>HTTP method: POST</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<blockquote>
+<p>Following request adds the user &ldquo;test&rdquo; to the group &ldquo;admin&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v2.php/cloud/users/test/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">13</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
 
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to add to a group (string)</li>
-</ul></li>
-<li>Required arguments:
+groupid=admin
+</code></pre>
 
-<ul>
-<li><code class="prettyprint">groupid</code>: Group Id that the user should get added to (string)</li>
-</ul></li>
-</ul>
+<p><code class="prettyprint">POST http://example.org/{user}/{userId}/groups</code></p>
 
-<h4 id="response">Response</h4>
+<h3 id="request-parameters">Request Parameters</h3>
 
-<h5 id="errors">Errors</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td></td>
+<td>User to add to a group.</td>
+</tr>
+</tbody></table>
 
-<ul>
-<li>200: successful</li>
-<li>400: no group specified</li>
-<li>400: group does not exist</li>
-<li>400: user does not exist</li>
-<li>400: failed to add user to group</li>
-<li>401: authentication was not successful</li>
-</ul>
+<h3 id="query-parameters">Query Parameters</h3>
 
-<h5 id="success">Success</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>groupid</td>
+<td></td>
+<td>ID of the group that the user should get added to.</td>
+</tr>
+</tbody></table>
 
-<p>If the action could be performed a successful OCS response object MUST be returned by the server.
-The status code for a successful operation is 201/Created.</p>
+<h3 id="response">Response</h3>
 
-<h3 id="remove-user-from-group">Remove user from group</h3>
-
-<p>Removes the specified user to the specified group.</p>
-
-<h4 id="request">Request</h4>
-
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/groups</code></li>
-<li>HTTP method: DELETE</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
-
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to add to a group (string)</li>
-</ul></li>
-<li>Required parameters:
-
-<ul>
-<li><code class="prettyprint">groupid</code>: Group Id to remove the membership from (string)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="errors">Errors</h5>
-
-<ul>
-<li>200: successful</li>
-<li>400: no group specified</li>
-<li>400: group doesn&rsquo;t exist</li>
-<li>401: authentication was not successful</li>
-<li>403: insufficient privileges</li>
-<li>500: failed to remove user from group</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.</p>
-
-<h3 id="promote-user-to-subadmin-of-group">Promote user to subadmin of group</h3>
-
-<p>Makes a user the subadmin of a group. Authentication is done by sending a Basic HTTP Authorization header.</p>
-
-<h4 id="request">Request</h4>
-
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/subadmin</code></li>
-<li>HTTP method: POST</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
-
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to promote (string)</li>
-</ul></li>
-<li>Required parameters:
-
-<ul>
-<li><code class="prettyprint">groupid</code>: Group id of which the user shall get subadmin privileges (string)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="errors">Errors</h5>
-
-<ul>
-<li>201: successful</li>
-<li>404: user does not exist</li>
-<li>404: group does not exist</li>
-<li>401: authentication was not successful</li>
-<li>500: unknown failure</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>If the action could be performed a successful OCS response object MUST be returned by the server.</p>
-
-<h3 id="remove-subadmin-privileges-of-user">Remove subadmin privileges of user</h3>
-
-<p>Removes the subadmin rights for the user specified from the group specified. Authentication is done by sending a Basic HTTP Authorization header.</p>
-
-<h4 id="request">Request</h4>
-
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/subadmin</code></li>
-<li>HTTP method: DELETE</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
-
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to demote (string)</li>
-</ul></li>
-<li>Required parameters:
-
-<ul>
-<li><code class="prettyprint">groupid</code>: Group id of which the user shall get removed the subadmin privileges (string)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="errors">Errors</h5>
-
-<ul>
-<li>204: successful</li>
-<li>401: authentication was not successful</li>
-<li>500: unknown failure</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>If the action could be performed a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.</p>
-
-<h3 id="get-subadmin-privileges-of-user">Get subadmin privileges of user</h3>
-
-<p>Returns the groups in which the user is a subadmin. Authentication is done by sending a Basic HTTP Authorization header.</p>
-
-<h4 id="request">Request</h4>
-
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{user}/{uid}/subadmin</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
-
-<ul>
-<li><code class="prettyprint">uid</code>: Identifier of the user to get information from (string)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="errors">Errors</h5>
-
-<ul>
-<li>200: successful</li>
-<li>401: authentication was not successful</li>
-<li>404: user does not exist</li>
-<li>500: unknown failure</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of groups such as:</p>
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
-  <span class="nt">&lt;meta&gt;</span>
-      <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
-      <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
-    <span class="nt">&lt;message/&gt;</span>
-  <span class="nt">&lt;/meta&gt;</span>
-  <span class="nt">&lt;data&gt;</span>
-    <span class="c">&lt;!-- List of groups the user is subadmin of --&gt;</span>
-    <span class="nt">&lt;element&gt;</span>testgroup<span class="nt">&lt;/element&gt;</span>
-  <span class="nt">&lt;/data&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
 <span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
 
-<h3 id="get-groups-on-the-server">Get groups on the server</h3>
+<p>The expected response MUST, in case of success, be a OCS success message.</p>
 
-<p>Retrieves a list of groups from the cloud server. Authentication is done by sending a Basic HTTP Authorization header.</p>
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Invalid input data.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Failed to add user to group.</td>
+</tr>
+</tbody></table>
 
-<h4 id="request">Request</h4>
+<h2 id="remove-user-from-group">Remove user from group</h2>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{groups}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>Optional arguments:
+<p>Removes the specified user to the specified group.</p>
 
-<ul>
-<li><code class="prettyprint">search</code>:  search string (string)</li>
-<li><code class="prettyprint">limit</code>: limit value (int)</li>
-<li><code class="prettyprint">offset</code>: offset value (int)</li>
-</ul></li>
-</ul>
+<h3 id="http-request">HTTP Request</h3>
 
-<h4 id="response">Response</h4>
+<blockquote>
+<p>Following request removes the user &ldquo;test&rdquo; from the group &ldquo;admin&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v2.php/cloud/users/test/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">13</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
 
-<h5 id="errors">Errors</h5>
+groupid=admin
+</code></pre>
 
-<ul>
-<li>401: authentication was not successful</li>
-</ul>
+<p><code class="prettyprint">DELETE http://example.org/{user}/{userId}/groups</code></p>
 
-<h5 id="success">Success</h5>
+<h3 id="request-parameters">Request Parameters</h3>
 
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of groups such as:</p>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td></td>
+<td>User to remove from a group.</td>
+</tr>
+</tbody></table>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>groupid</td>
+<td></td>
+<td>ID of the group that the user should get removed from.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server. According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Invalid input data.</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Insufficient privileges.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Failed to remove user from group.</td>
+</tr>
+</tbody></table>
+
+<h2 id="promote-user-to-subadmin">Promote user to subadmin</h2>
+
+<p>Makes a user the subadmin of a group.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request would make the user &ldquo;test&rdquo; a subadmin of the group &ldquo;admin&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">13</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+
+groupid=admin
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.com/{user}/{userId}/subadmins</code></p>
+
+<h3 id="url-parameters">URL parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td>User ID of the user to promote.</td>
+</tr>
+</tbody></table>
+
+<h3 id="query-parameters">Query parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>groupid</td>
+<td>Group that the user should become subadmin of.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful or user is not permitted to perform this action.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User does not exist.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Group does not exist.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Unknown failure.</td>
+</tr>
+</tbody></table>
+
+<h2 id="remove-subadmin-privileges">Remove subadmin privileges</h2>
+
+<p>Removes the subadmin rights for the user specified from the group specified.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request would remove the subadmin privileges of user &ldquo;test&rdquo; from &ldquo;admin&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">13</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+
+groupid=admin
+</code></pre>
+
+<p><code class="prettyprint">DELETE http://example.com/{user}/{userId}/subadmins</code></p>
+
+<h3 id="url-parameters">URL parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td>User ID of the user to demote.</td>
+</tr>
+</tbody></table>
+
+<h3 id="query-parameters">Query parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>groupid</td>
+<td>Group that the user should become a regular member of of.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server.
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>204</td>
+<td>Successful.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful or user is not permitted to perform this action.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-subadmin-privileges-of-user">Get subadmin privileges of user</h2>
+
+<p>Returns the groups in which the user is a subadmin.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request would list all groups that the user &ldquo;test&rdquo; is a subadmin of.</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p><code class="prettyprint">GET http://example.com/{user}/{userId}/subadmins</code></p>
+
+<h3 id="url-parameters">URL parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userId</td>
+<td>User ID of the user to get membership from.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message with a data element containing a list of groups:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="nt">&lt;element&gt;</span>AnotherGroup<span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;element&gt;</span>MyTestGroup<span class="nt">&lt;/element&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of groups.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>200</td>
+<td>Successful.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User does not exist.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Unknown failure.</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-groups-on-the-server">Get groups on the server</h2>
+
+<p>Retrieves a list of groups from the cloud server.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request would get a list of all groups on the server:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p><code class="prettyprint">GET http://example.com/{groups}</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>search</td>
+<td></td>
+<td>Filter to search for.</td>
+</tr>
+<tr>
+<td>limit</td>
+<td></td>
+<td>Optional limit.</td>
+</tr>
+<tr>
+<td>offset</td>
+<td></td>
+<td>Optional offset.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message with a data element containing a list of groups:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="nt">&lt;element&gt;</span>AnotherGroup<span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;element&gt;</span>MyTestGroup<span class="nt">&lt;/element&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User does not exist.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Unknown failure.</td>
+</tr>
+</tbody></table>
+
+<h2 id="create-a-new-group">Create a new group</h2>
+
+<p>Creates a new group.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request would create a group with the name &ldquo;NewGroup&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v1.php/cloud/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">16</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+
+groupid=NewGroup
+</code></pre>
+
+<p><code class="prettyprint">POST http://example.com/{groups}</code></p>
+
+<h3 id="query-parameters">Query parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>groupid</td>
+<td></td>
+<td>Name of the group to create.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>If the action could be performed a successful OCS response object MUST be returned by the server.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>201</td>
+<td>Successful.</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Invalid input data.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>409</td>
+<td>Group already exists.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Failed to create the group.</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-members-of-a-group">Get members of a group</h2>
+
+<p>Retrieves a list of group members.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Following request would get the membership information of the user named &ldquo;test&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/groups/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p><code class="prettyprint">GET http://example.com/{groups}/{groupId}</code></p>
+
+<h3 id="url-parameters">URL parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>groupId</td>
+<td>The ID of the group to request membership from.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message with the list of group memberships is returned:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
   <span class="nt">&lt;meta&gt;</span>
@@ -1910,75 +2523,64 @@ The status code in case of a successful operation is 204/No Content.</p>
   <span class="nt">&lt;/meta&gt;</span>
   <span class="nt">&lt;data&gt;</span>
     <span class="nt">&lt;groups&gt;</span>
-      <span class="c">&lt;!-- List of groups on the server --&gt;</span>
-      <span class="nt">&lt;element&gt;</span>admin<span class="nt">&lt;/element&gt;</span>
-      <span class="nt">&lt;element&gt;</span>Support staff<span class="nt">&lt;/element&gt;</span>
+      <span class="c">&lt;!-- List of members in the group --&gt;</span>
+      <span class="nt">&lt;element&gt;</span>JohnDoe<span class="nt">&lt;/element&gt;</span>
+      <span class="nt">&lt;element&gt;</span>JaneMeyer<span class="nt">&lt;/element&gt;</span>
     <span class="nt">&lt;/groups&gt;</span>
   <span class="nt">&lt;/data&gt;</span>
 <span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
 
-<h3 id="create-a-new-group">Create a new group</h3>
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the user groups.</p>
 
-<p>Creates a new group. Authentication is done by sending a Basic HTTP Authorization header.</p>
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful or user is not permitted to perform this action.</td>
+</tr>
+</tbody></table>
 
-<h4 id="request">Request</h4>
+<h2 id="get-subadmins-of-a-group">Get subadmins of a group</h2>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{groups}</code></li>
-<li>HTTP method: POST</li>
-<li>Scope: Authenticated</li>
-<li>Required arguments:
+<p>Returns subadmins of the group.</p>
 
-<ul>
-<li><code class="prettyprint">groupid</code>: identifier of the to creating group (string)</li>
-</ul></li>
-</ul>
+<h3 id="http-request">HTTP Request</h3>
 
-<h4 id="response">Response</h4>
+<blockquote>
+<p>Following request would get the membership information of the user named &ldquo;test&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/groups/admin/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
-<h5 id="errors">Errors</h5>
+<p><code class="prettyprint">GET http://example.com/{groups}/{groupId}/subadmins</code></p>
 
-<ul>
-<li>201: successful</li>
-<li>400: invalid input data</li>
-<li>401: authentication was not successful</li>
-<li>409: group already exists</li>
-<li>500: failed to add the group</li>
-</ul>
+<h3 id="url-parameters">URL parameters</h3>
 
-<h5 id="success">Success</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>groupId</td>
+<td>The ID of the group to request a list of subadmins from.</td>
+</tr>
+</tbody></table>
 
-<p>If the action could be performed a successful OCS response object MUST be returned by the server.</p>
+<h3 id="response">Response</h3>
 
-<h3 id="get-members-of-a-group">Get members of a group</h3>
-
-<p>Retrieves a list of group members. Authentication is done by sending a Basic HTTP Authorization header.</p>
-
-<h4 id="request">Request</h4>
-
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{groups}/{groupId}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
-
-<ul>
-<li><code class="prettyprint">groupId</code>: identifier of group (string)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="errors">Errors</h5>
-
-<ul>
-<li>401: authentication was not successful</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of groups such as:</p>
+<blockquote>
+<p>In case of success, a OCS success message with the list of subadmins is returned:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
   <span class="nt">&lt;meta&gt;</span>
@@ -1986,160 +2588,209 @@ The status code in case of a successful operation is 204/No Content.</p>
     <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
   <span class="nt">&lt;/meta&gt;</span>
   <span class="nt">&lt;data&gt;</span>
-    <span class="c">&lt;!-- List of groups on the server --&gt;</span>
-    <span class="nt">&lt;users&gt;</span>
-      <span class="nt">&lt;element&gt;</span>Frank<span class="nt">&lt;/element&gt;</span>
-    <span class="nt">&lt;/users&gt;</span>
+    <span class="nt">&lt;groups&gt;</span>
+      <span class="c">&lt;!-- List of members in the group --&gt;</span>
+      <span class="nt">&lt;element&gt;</span>JohnDoe<span class="nt">&lt;/element&gt;</span>
+      <span class="nt">&lt;element&gt;</span>JaneMeyer<span class="nt">&lt;/element&gt;</span>
+    <span class="nt">&lt;/groups&gt;</span>
   <span class="nt">&lt;/data&gt;</span>
 <span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
 
-<h3 id="get-subadmins-of-a-group">Get subadmins of a group</h3>
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the subadmins.</p>
 
-<p>Returns subadmins of the group. Authentication is done by sending a Basic HTTP Authorization header.</p>
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Group does not exist.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Unknown failure.</td>
+</tr>
+</tbody></table>
 
-<h4 id="request">Request</h4>
+<h2 id="delete-a-group">Delete a group</h2>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{groups}/{groupId}/subadmins</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<p>Removes a group.</p>
 
-<ul>
-<li><code class="prettyprint">groupId</code>: identifier of group (string)</li>
-</ul></li>
-</ul>
+<h3 id="http-request">HTTP Request</h3>
 
-<h4 id="response">Response</h4>
+<blockquote>
+<p>Following request would delete the group &ldquo;test&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v1.php/cloud/groups/test</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
-<h5 id="errors">Errors</h5>
+<p><code class="prettyprint">DELETE http://example.com/{groups}/{groupId}</code></p>
 
-<ul>
-<li>401: authentication was not successful</li>
-<li>404: group does not exist</li>
-<li>500: unknown failure</li>
-</ul>
+<h3 id="url-parameters">URL parameters</h3>
 
-<h5 id="success">Success</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>groupId</td>
+<td>ID of the group to delete.</td>
+</tr>
+</tbody></table>
 
-<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of subadmins such as:</p>
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
-  <span class="nt">&lt;meta&gt;</span>
-    <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
-    <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
-  <span class="nt">&lt;/meta&gt;</span>
-  <span class="nt">&lt;data&gt;</span>
-    <span class="nt">&lt;users&gt;</span>
-      <span class="c">&lt;!-- List of subadmins on the server  --&gt;</span>
-      <span class="nt">&lt;element&gt;</span>Tom<span class="nt">&lt;/element&gt;</span>
-    <span class="nt">&lt;/users&gt;</span>
-  <span class="nt">&lt;/data&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
 <span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
-
-<h3 id="delete-a-group">Delete a group</h3>
-
-<p>Removes a group. Authentication is done by sending a Basic HTTP Authorization header.</p>
-
-<h4 id="request">Request</h4>
-
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{groups}/{groupId}</code></li>
-<li>HTTP method: DELETE</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
-
-<ul>
-<li><code class="prettyprint">groupId</code>: identifier of group (string)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="errors">Errors</h5>
-
-<ul>
-<li>401: authentication was not successful</li>
-<li>500: failed to delete group</li>
-</ul>
-
-<h5 id="success">Success</h5>
 
 <p>If the action could be performed a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.</p>
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.</p>
 
-<h3 id="get-list-of-installed-apps">Get list of installed apps</h3>
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>204</td>
+<td>Successful.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful or user is not permitted to perform this action.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Failed to delete group.</td>
+</tr>
+</tbody></table>
 
-<p>Returns a list of apps installed on the cloud server. Authentication is done by sending a Basic HTTP Authorization header.</p>
+<h2 id="get-list-of-installed-apps">Get list of installed apps</h2>
 
-<h4 id="request">Request</h4>
+<p>Returns a list of apps installed on the cloud server.</p>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{apps}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-</ul>
+<h3 id="http-request">HTTP Request</h3>
 
-<h4 id="response">Response</h4>
-
-<h5 id="errors">Errors</h5>
-
-<ul>
-<li>400: invalid input data</li>
-<li>401: authentication was not successful</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>If the action could be performed a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of subadmins such as:</p>
-<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
-<span class="nt">&lt;ocs&gt;</span>
-  <span class="nt">&lt;meta&gt;</span>
-    <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
-    <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
-  <span class="nt">&lt;/meta&gt;</span>
-  <span class="nt">&lt;data&gt;</span>
-    <span class="nt">&lt;apps&gt;</span>
-      <span class="c">&lt;!-- List of apps on the server  --&gt;</span>
-      <span class="nt">&lt;element&gt;</span>files<span class="nt">&lt;/element&gt;</span>
-      <span class="nt">&lt;element&gt;</span>provisioning_api<span class="nt">&lt;/element&gt;</span>
-    <span class="nt">&lt;/apps&gt;</span>
-  <span class="nt">&lt;/data&gt;</span>
-<span class="nt">&lt;/ocs&gt;</span>
+<blockquote>
+<p>Following request would get a list of all installed apps.</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/apps</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
 </code></pre>
 
-<h3 id="get-application-information">Get application information</h3>
+<p><code class="prettyprint">GET http://example.com/{apps}</code></p>
 
-<p>Provides information about a specific application. Authentication is done by sending a Basic HTTP Authorization header.</p>
+<h3 id="response">Response</h3>
 
-<h4 id="request">Request</h4>
+<blockquote>
+<p>In case of success, a OCS success message with the list of installed apps is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="nt">&lt;apps&gt;</span>
+   <span class="c">&lt;!-- List of apps on the server  --&gt;</span>
+   <span class="nt">&lt;element&gt;</span>activity<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>audit_monitor<span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;/apps&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{apps}/{appId}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+</code></pre>
 
-<ul>
-<li><code class="prettyprint">appId</code>: identifier of app to request information from (string)</li>
-</ul></li>
-</ul>
+<p>If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the installed apps.</p>
 
-<h4 id="response">Response</h4>
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Invalid input data.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Group does not exist.</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Unknown failure.</td>
+</tr>
+</tbody></table>
 
-<h5 id="errors">Errors</h5>
+<h2 id="get-application-information">Get application information</h2>
 
-<ul>
-<li>401: authentication was not successful</li>
-<li>404: application not found</li>
-</ul>
+<p>Get information about the specified application.</p>
 
-<h5 id="success">Success</h5>
+<h3 id="http-request">HTTP Request</h3>
 
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The <code class="prettyprint">data</code> element MUST contain a list of information about the app, including at least:</p>
+<blockquote>
+<p>Following request would delete the group &ldquo;test&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/cloud/apps/{appId}</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p><code class="prettyprint">GET example.org/{apps}/{appId}</code></p>
+
+<h3 id="url-parameters">URL parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>appId</td>
+<td>ID of the app to get more information from.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without information about the app:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
   <span class="nt">&lt;meta&gt;</span>
@@ -2157,67 +2808,153 @@ The status code in case of a successful operation is 204/No Content.</p>
 <span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
 
-<h3 id="enable-application">Enable application</h3>
+<p>In case the action was successfully a successful OCS response object MUST be returned by the server. The data element MUST contain a list of information about the app.</p>
 
-<p>Enable an app. Authentication is done by sending a Basic HTTP Authorization header.</p>
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>204</td>
+<td>Successful.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Authentication was not successful or user is not permitted to perform this action.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Application not found.</td>
+</tr>
+</tbody></table>
 
-<h4 id="request">Request</h4>
+<h2 id="enable-application">Enable application</h2>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{apps}/{appId}</code></li>
-<li>HTTP method: POST</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<p>Enable an app.</p>
 
-<ul>
-<li><code class="prettyprint">appId</code>: identifier of app to enable (string)</li>
-</ul></li>
-</ul>
+<h3 id="http-request">HTTP Request</h3>
 
-<h4 id="response">Response</h4>
+<blockquote>
+<p>Enables the application &ldquo;activity&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v2.php/cloud/apps/activity</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
-<h5 id="errors">Errors</h5>
+<p><code class="prettyprint">POST example.org/{apps}/{appId}</code></p>
 
-<ul>
-<li>401: authentication was not successful</li>
-</ul>
+<h3 id="request-parameters">Request Parameters</h3>
 
-<h5 id="success">Success</h5>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>appId</td>
+<td></td>
+<td>ID of the application to enable.</td>
+</tr>
+</tbody></table>
 
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server.</p>
+<h3 id="response">Response</h3>
 
-<h3 id="disable-application">Disable application</h3>
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
 
-<p>Disables the specified app. Authentication is done by sending a Basic HTTP Authorization header.</p>
+<p>The expected response MUST, in case of success, be a OCS success message.</p>
 
-<h4 id="request">Request</h4>
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+</tbody></table>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{apps}/{appId}</code></li>
-<li>HTTP method: DELETE</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<h2 id="disable-application">Disable application</h2>
 
-<ul>
-<li><code class="prettyprint">appId</code>: identifier of app to delete (string)</li>
-</ul></li>
-</ul>
+<p>Disables the specified app. </p>
 
-<h4 id="response">Response</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<h5 id="errors">Errors</h5>
+<blockquote>
+<p>Disables the application &ldquo;activity&rdquo;:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v2.php/cloud/apps/activity</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
-<ul>
-<li>401: authentication was not successful</li>
-</ul>
+<p><code class="prettyprint">DELETE example.org/{apps}/{appId}</code></p>
 
-<h5 id="success">Success</h5>
+<h3 id="request-parameters">Request Parameters</h3>
 
-<p>In case the action was successfully a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.</p>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>appId</td>
+<td></td>
+<td>ID of the application to disable.</td>
+</tr>
+</tbody></table>
 
-<p>Syntax: ocs/v2.php/cloud/apps/{appid}</p>
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response MUST, in case of success, be a OCS success message.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+</tbody></table>
 
 <h1 id="private-data-experimental">Private Data [Experimental]</h1>
 
