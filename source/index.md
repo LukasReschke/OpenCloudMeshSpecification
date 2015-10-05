@@ -901,7 +901,24 @@ The response MUST be a OCS success message or a 993 forbidden statuscode if the 
 
 In case a start or count parameter is specified endpoints MUST return the newest entries first to allow consumers to chunk the event transmission.
 
-# PROVISIONING [Experimental]
+# Provisoning [Experimental]
+> A valid service definition looks as following:
+
+```json
+{
+    "version": 2,
+    "services": {
+        "PROVISIONING": {
+            "version": 1,
+            "endpoints": {
+                "user": "/ocs/v2.php/cloud/users",
+                "groups": "/ocs/v2.php/cloud/groups",
+                "apps": "/ocs/v2.php/cloud/apps"
+            }
+        }
+    }
+}
+```
 
 The "PROVISONING" module allows management of users and groups on a service provider. Specifically it supports the following functionalities:
 
@@ -921,109 +938,131 @@ The "PROVISONING" module allows management of users and groups on a service prov
     - Delete applications
     - List applications
 
-A provider service definition MUST look like the following (the endpoint URI MAY be changed by providers):
-
-```json
-{
-    "version": 2,
-    "services": {
-        "PROVISIONING": {
-            "version": 1,
-            "endpoints": {
-                "user": "/ocs/v2.php/cloud/users",
-                "groups": "/ocs/v2.php/cloud/groups",
-                "apps": "/ocs/v2.php/cloud/apps"
-            }
-        }
-    }
-}
-```
-
 This module is likely to require administrative privileges for accessing and service providers SHOULD review their implementation carefully.
 
-### Create user
+## Create user
 Creates a new user on the server.
 
-#### Request
-- URL structure: `example.org/{user}`
-- HTTP method: POST
-- Scope: Authenticated
-- Required arguments:
-    - `userid`: Username to create (string) 
-    - `password`: Password of the user (string)
+### HTTP Request
+> Creates an user "newUser" with the password "newPassword":
 
-#### Response
-##### Errors
-- 400: invalid input data
-- 401: authentication was not successful
-- 409: username already exists
-- 500: unknown error occurred whilst adding the user
+```http
+POST /master/ocs/v2.php/cloud/users HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+Content-Length: 35
+Content-Type: application/x-www-form-urlencoded
 
-##### Success
-In case the user has been created successfully a successful OCS response object MUST be returned by the server.
-The status code for a successful operation is 201/Created.
+userid=newUser&password=newPassword
+```
 
-### Get users
-Retrieves a list of users on the server.
+`POST http://example.org/{user}`
 
-#### Request
-- URL structure: `example.org/{user}`
-- HTTP method: GET
-- Scope: Authenticated
-- Optional arguments:
-    - `search`: search string (string)
-    - `limit`: limit value (int)
-    - `offset`: offset value (int)
+### Query Parameters
 
-#### Response
-##### Errors
-- 401: authentication was not successful
+Parameter | Default | Description
+--------- | ------- | -----------
+userid || Username to create.
+password || Password of the user.
 
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of users such as:
+### Response
+> In case of success, a OCS success message without further details is returned:
 
 ```xml
 <?xml version="1.0"?>
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>200</statuscode>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
+The expected response MUST, in case of success, be a OCS success message.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+| 400 | Invalid input data. |
+| 401 | Authentication was not successful. |
+| 409 | Username already exists. |
+| 500 | Unknown error occurred whilst adding the user. |
+
+## Get list of users
+Retrieves a list of users on the server.
+
+### HTTP Request
+> Request a list of users:
+
+```http
+GET /master/ocs/v2.php/cloud/users HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`GET http://example.org/{user}`
+
+### Query Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+search ||Username to search for.
+limit||How many users to list.
+offset||Optional offset.
+### Response
+> In case of success, a OCS success message with the mbedded user names is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
   <message/>
  </meta>
  <data>
   <users>
-   <!-- List of users on the instance -->
-   <element>Frank</element>
    <element>admin</element>
-   <element>test</element>
-   <element>test1</element>
+   <element>JonDoe</element>
+   <element>JaneMeyer</element>
   </users>
  </data>
 </ocs>
+</ocs>
 ```
 
-### Get a user
+The expected response MUST, in case of success, be a OCS success message containing the user names as data element.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+| 401 | Authentication was not successful. |
+
+## Get a user
 
 Retrieves information about a single user.
 
-#### Request
-- URL structure: `example.org/{user}/{uid}`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to get (string)
-- Optional arguments:
-    - `search`: search string (string)
-    - `limit`: limit value (int)
-    - `offset`: offset value (int)
+### HTTP Request
+> To request information about an user called "admin" the following request would be valid: 
 
-#### Response
-##### Errors
-- 401: authentication was not successful
-- 404: user not found
+```http
+GET /master/ocs/v2.php/cloud/users/admin HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
 
-##### Success
-In case the action was successfully a successful OCS response object MUST be returned by the server. The `data` element MUST contain a blob as following, values MAY be empty or more values MAY get returned:
+`GET http://example.com/{user}/{userId}`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+userId | User name of the user to lookup.
+
+### Response
+> In case the action was successfully a successful OCS response object MUST be returned by the server. The data element MUST contain a blob as following, values MAY be empty or more values MAY get returned:
 
 ```xml
 <?xml version="1.0"?>
@@ -1054,64 +1093,130 @@ In case the action was successfully a successful OCS response object MUST be ret
 </ocs>
 ```
 
-### Edit user attributes
+In case the action was successfully a successful OCS response object MUST be returned by the server.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+| 401 | Authentication was not successful. |
+| 404 | User not found. |
+
+## Edit user attributes
 Edits attributes related to a user. Users are able to edit email, displayname and password; admins can also edit the quota value.
 
-#### Request
-- URL structure: `example.org/{user}/{uid}`
-- HTTP method: PUT
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to edit (string)
-- Required arguments:
-    - `key`: te field to edit (email, quota, displayname, password) (string)
-    - `value`: the new value for the field (mixed)
+### HTTP Request
+> Following request would change the password of the user "admin" to "NewUserPassword";
 
-#### Response
-##### Errors
-- 400: invalid input data
-- 400: quote is not a valid value
-- 401: authentication was not successful or invalid key
-- 404: user not found
+```http
+PUT /master/ocs/v2.php/cloud/users/admin HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+Content-Length: 34
+Content-Type: application/x-www-form-urlencoded
 
-##### Success
-In case the action was successfully a successful OCS response object MUST be returned by the server.
+key=password&value=NewUserPassword
+```
 
-### Delete user
+`PUT http://example.com/{user}/{uid}`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+userId | User name of the user to edit.
+
+### Query Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+key | | Field to edit. One of "email", "quota", "displayname" or "password".
+value | | New value for the field.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
+The expected response MUST, in case of success, be a OCS success message.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+|400|Invalid input data.|
+|401|authentication was not successful or invalid key.|
+|404|User not found.|
+
+## Delete user
 Deletes a user from the instance.
 
-#### Request
-- URL structure: `example.org/{user}/{uid}`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to delete (string)
+### HTTP Request
+> Following request would delete the user named "test":
 
-#### Response
-##### Errors
-- 401: authentication was not successful or user is not permitted to perform this action
+```http
+DELETE /ocs/v2.php/cloud/users/test HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
 
-##### Success
+`DELETE http://example.com/{user}/{userId}`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+userId | User ID of the user to delete.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
 In case the action was successfully a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.
 
-### Get group memberships
+| Status code | Meaning               |
+|-------------|-----------------------|
+|401|Authentication was not successful or user is not permitted to perform this action.|
+
+## Get group memberships
 Retrieves a list of groups the specified user is member of.
 
-#### Request
-- URL structure: `example.org/{user}/{uid}/groups`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to delete (string)
+### HTTP Request
+> Following request would get the membership information of the user named "test":
 
-#### Response
-##### Errors
-- 401: authentication was not successful or user is not permitted to perform this action
+```http
+GET /ocs/v2.php/cloud/users/test/group HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
 
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of users such as:
+`GET http://example.com/{user}/{userId}/groups`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+userId | User ID of the user to delete.
+
+### Response
+> In case of success, a OCS success message with the list of group memberships is returned:
 
 ```xml
 <?xml version="1.0"?>
@@ -1130,156 +1235,390 @@ If the action could be performed a successful OCS response object MUST be return
 </ocs>
 ```
 
-### Add user to group
+If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the user groups.
+
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+|401|Authentication was not successful or user is not permitted to perform this action.|
+
+## Add user to group
 Adds the specified user to the specified group.
 
-#### Request
-- URL structure: `example.org/{user}/{uid}/groups`
-- HTTP method: POST
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to add to a group (string)
-- Required arguments:
-    - `groupid`: Group Id that the user should get added to (string)
+### HTTP Request
+> Following request adds the user "test" to the group "admin":
 
-#### Response
-##### Errors
-- 200: successful
-- 400: no group specified
-- 400: group does not exist
-- 400: user does not exist
-- 400: failed to add user to group
-- 401: authentication was not successful
+```http
+POST /master/ocs/v2.php/cloud/users/test/groups HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+Content-Length: 13
+Content-Type: application/x-www-form-urlencoded
 
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server.
-The status code for a successful operation is 201/Created.
+groupid=admin
+```
 
-### Remove user from group
-Removes the specified user to the specified group.
+`POST http://example.org/{user}/{userId}/groups`
 
-#### Request
-- URL structure: `example.org/{user}/{uid}/groups`
-- HTTP method: DELETE
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to add to a group (string)
-- Required parameters:
-    - `groupid`: Group Id to remove the membership from (string)
+### Request Parameters
 
-#### Response
-##### Errors
-- 200: successful
-- 400: no group specified
-- 400: group doesn't exist
-- 401: authentication was not successful
-- 403: insufficient privileges
-- 500: failed to remove user from group
+Parameter | Default | Description
+--------- | ------- | -----------
+userId || User to add to a group.
 
-##### Success
-In case the action was successfully a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.
+### Query Parameters
 
-### Promote user to subadmin of group
-Makes a user the subadmin of a group. Authentication is done by sending a Basic HTTP Authorization header.
+Parameter | Default | Description
+--------- | ------- | -----------
+groupid || ID of the group that the user should get added to.
 
-#### Request
-- URL structure: `example.org/{user}/{uid}/subadmin`
-- HTTP method: POST
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to promote (string)
-- Required parameters:
-    - `groupid`: Group id of which the user shall get subadmin privileges (string)
-
-#### Response
-##### Errors
-- 201: successful
-- 404: user does not exist
-- 404: group does not exist
-- 401: authentication was not successful
-- 500: unknown failure
-
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server.
-
-### Remove subadmin privileges of user
-Removes the subadmin rights for the user specified from the group specified. Authentication is done by sending a Basic HTTP Authorization header.
-
-#### Request
-- URL structure: `example.org/{user}/{uid}/subadmin`
-- HTTP method: DELETE
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to demote (string)
-- Required parameters:
-    - `groupid`: Group id of which the user shall get removed the subadmin privileges (string)
-
-#### Response
-##### Errors
-- 204: successful
-- 401: authentication was not successful
-- 500: unknown failure
-
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.
-
-### Get subadmin privileges of user
-Returns the groups in which the user is a subadmin. Authentication is done by sending a Basic HTTP Authorization header.
-
-#### Request
-- URL structure: `example.org/{user}/{uid}/subadmin`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `uid`: Identifier of the user to get information from (string)
-
-#### Response
-##### Errors
-- 200: successful
-- 401: authentication was not successful
-- 404: user does not exist
-- 500: unknown failure
-
-##### Success
-In case the action was successfully a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of groups such as:
+### Response
+> In case of success, a OCS success message without further details is returned:
 
 ```xml
 <?xml version="1.0"?>
 <ocs>
-  <meta>
-      <status>ok</status>
-      <statuscode>200</statuscode>
-    <message/>
-  </meta>
-  <data>
-    <!-- List of groups the user is subadmin of -->
-    <element>testgroup</element>
-  </data>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
 </ocs>
 ```
 
-### Get groups on the server
-Retrieves a list of groups from the cloud server. Authentication is done by sending a Basic HTTP Authorization header.
+The expected response MUST, in case of success, be a OCS success message.
 
-#### Request
-- URL structure: `example.org/{groups}`
-- HTTP method: GET
-- Scope: Authenticated
-- Optional arguments:
-    - `search`:  search string (string)
-    - `limit`: limit value (int)
-    - `offset`: offset value (int)
+| Status code | Meaning               |
+|-------------|-----------------------|
+| 400 | Invalid input data. |
+| 401 | Failed to add user to group. |
 
-#### Response
-##### Errors
-- 401: authentication was not successful
+## Remove user from group
+Removes the specified user to the specified group.
 
-##### Success
-In case the action was successfully a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of groups such as:
+### HTTP Request
+> Following request removes the user "test" from the group "admin":
+
+```http
+DELETE /master/ocs/v2.php/cloud/users/test/groups HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+Content-Length: 13
+Content-Type: application/x-www-form-urlencoded
+
+groupid=admin
+```
+
+`DELETE http://example.org/{user}/{userId}/groups`
+
+### Request Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+userId || User to remove from a group.
+
+### Query Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+groupid || ID of the group that the user should get removed from.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
+In case the action was successfully a successful OCS response object MUST be returned by the server. According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+| 400 | Invalid input data. |
+| 403 | Insufficient privileges. |
+| 500 | Failed to remove user from group. |
+
+## Promote user to subadmin
+Makes a user the subadmin of a group.
+
+### HTTP Request
+> Following request would make the user "test" a subadmin of the group "admin":
+
+```http
+POST /master/ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+Content-Length: 13
+Content-Type: application/x-www-form-urlencoded
+
+groupid=admin
+```
+
+`POST http://example.com/{user}/{userId}/subadmins`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+userId | User ID of the user to promote.
+
+### Query parameters
+Parameter | Default 
+--------- | ------- 
+groupid | Group that the user should become subadmin of.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
+If the action could be performed a successful OCS response object MUST be returned by the server.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+|401|Authentication was not successful or user is not permitted to perform this action.|
+|404|User does not exist.|
+|404|Group does not exist.|
+|401|Authentication was not successful.|
+|500|Unknown failure.|
+
+## Remove subadmin privileges
+Removes the subadmin rights for the user specified from the group specified.
+
+### HTTP Request
+> Following request would remove the subadmin privileges of user "test" from "admin":
+
+```http
+DELETE /master/ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+Content-Length: 13
+Content-Type: application/x-www-form-urlencoded
+
+groupid=admin
+```
+
+`DELETE http://example.com/{user}/{userId}/subadmins`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+userId | User ID of the user to demote.
+
+### Query parameters
+Parameter | Default 
+--------- | ------- 
+groupid | Group that the user should become a regular member of of.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
+If the action could be performed a successful OCS response object MUST be returned by the server.
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+|204|Successful.|
+|401|Authentication was not successful or user is not permitted to perform this action.|
+|401|Authentication was not successful.|
+
+## Get subadmin privileges of user
+Returns the groups in which the user is a subadmin.
+
+### HTTP Request
+> Following request would list all groups that the user "test" is a subadmin of.
+
+```http
+GET /master/ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`GET http://example.com/{user}/{userId}/subadmins`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+userId | User ID of the user to get membership from.
+
+### Response
+> In case of success, a OCS success message with a data element containing a list of groups:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data>
+  <element>AnotherGroup</element>
+  <element>MyTestGroup</element>
+ </data>
+</ocs>
+```
+
+In case the action was successfully a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of groups.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+|200|Successful.|
+|401|Authentication was not successful.|
+|404|User does not exist.|
+|500|Unknown failure.|
+
+## Get groups on the server
+Retrieves a list of groups from the cloud server.
+
+### HTTP Request
+> Following request would get a list of all groups on the server:
+
+```http
+GET /master/ocs/v1.php/cloud/groups HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`GET http://example.com/{groups}`
+
+Parameter | Default | Description
+--------- | ------- | -----------
+search||Filter to search for.
+limit||Optional limit.
+offset||Optional offset.
+### Response
+> In case of success, a OCS success message with a data element containing a list of groups:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data>
+  <element>AnotherGroup</element>
+  <element>MyTestGroup</element>
+ </data>
+</ocs>
+```
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+|401|Authentication was not successful.|
+|404|User does not exist.|
+|500|Unknown failure.|
+
+## Create a new group
+Creates a new group.
+
+### HTTP Request
+> Following request would create a group with the name "NewGroup":
+
+```http
+POST /master/ocs/v1.php/cloud/groups HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+Content-Length: 16
+Content-Type: application/x-www-form-urlencoded
+
+groupid=NewGroup
+```
+
+`POST http://example.com/{groups}`
+
+### Query parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+groupid||Name of the group to create.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
+If the action could be performed a successful OCS response object MUST be returned by the server.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+|201|Successful.|
+|400|Invalid input data.|
+|401|Authentication was not successful.|
+|409|Group already exists.|
+|500|Failed to create the group.|
+
+## Get members of a group
+Retrieves a list of group members.
+
+### HTTP Request
+> Following request would get the membership information of the user named "test":
+
+```http
+GET /master/ocs/v1.php/cloud/groups/admin HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`GET http://example.com/{groups}/{groupId}`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+groupId | The ID of the group to request membership from.
+
+### Response
+> In case of success, a OCS success message with the list of group memberships is returned:
 
 ```xml
 <?xml version="1.0"?>
@@ -1290,173 +1629,180 @@ In case the action was successfully a successful OCS response object MUST be ret
   </meta>
   <data>
     <groups>
-      <!-- List of groups on the server -->
-      <element>admin</element>
-      <element>Support staff</element>
+      <!-- List of members in the group -->
+      <element>JohnDoe</element>
+      <element>JaneMeyer</element>
     </groups>
   </data>
 </ocs>
 ```
 
-### Create a new group
-Creates a new group. Authentication is done by sending a Basic HTTP Authorization header.
+If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the user groups.
 
-#### Request
-- URL structure: `example.org/{groups}`
-- HTTP method: POST
-- Scope: Authenticated
-- Required arguments:
-    - `groupid`: identifier of the to creating group (string)
+| Status code | Meaning               |
+|-------------|-----------------------|
+|401|Authentication was not successful or user is not permitted to perform this action.|
 
-#### Response
-##### Errors
-- 201: successful
-- 400: invalid input data
-- 401: authentication was not successful
-- 409: group already exists
-- 500: failed to add the group
+## Get subadmins of a group
+Returns subadmins of the group.
 
-##### Success
+### HTTP Request
+> Following request would get the membership information of the user named "test":
+
+```http
+GET /master/ocs/v1.php/cloud/groups/admin/subadmins HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`GET http://example.com/{groups}/{groupId}/subadmins`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+groupId | The ID of the group to request a list of subadmins from.
+
+### Response
+> In case of success, a OCS success message with the list of subadmins is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+  <meta>
+    <statuscode>200</statuscode>
+    <status>ok</status>
+  </meta>
+  <data>
+    <groups>
+      <!-- List of members in the group -->
+      <element>JohnDoe</element>
+      <element>JaneMeyer</element>
+    </groups>
+  </data>
+</ocs>
+```
+
+If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the subadmins.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+|401|Authentication was not successful.|
+|404|Group does not exist.|
+|500|Unknown failure.|
+
+## Delete a group
+Removes a group.
+
+### HTTP Request
+> Following request would delete the group "test":
+
+```http
+DELETE /master/ocs/v1.php/cloud/groups/test HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`DELETE http://example.com/{groups}/{groupId}`
+
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+groupId | ID of the group to delete.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
 If the action could be performed a successful OCS response object MUST be returned by the server.
+According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.
 
-### Get members of a group
-Retrieves a list of group members. Authentication is done by sending a Basic HTTP Authorization header.
+| Status code | Meaning               |
+|-------------|-----------------------|
+|204|Successful.|
+|401|Authentication was not successful or user is not permitted to perform this action.|
+|401|Failed to delete group.|
 
-#### Request
-- URL structure: `example.org/{groups}/{groupId}`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `groupId`: identifier of group (string)
+## Get list of installed apps
+Returns a list of apps installed on the cloud server.
 
-#### Response
-##### Errors
-- 401: authentication was not successful
+### HTTP Request
+> Following request would get a list of all installed apps.
 
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of groups such as:
+```http
+GET /master/ocs/v1.php/cloud/apps HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`GET http://example.com/{apps}`
+
+### Response
+> In case of success, a OCS success message with the list of installed apps is returned:
 
 ```xml
 <?xml version="1.0"?>
 <ocs>
-  <meta>
-    <statuscode>200</statuscode>
-    <status>ok</status>
-  </meta>
-  <data>
-    <!-- List of groups on the server -->
-    <users>
-      <element>Frank</element>
-    </users>
-  </data>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data>
+  <apps>
+   <!-- List of apps on the server  -->
+   <element>activity</element>
+   <element>audit_monitor</element>
+  </apps>
+ </data>
 </ocs>
+
 ```
 
-### Get subadmins of a group
-Returns subadmins of the group. Authentication is done by sending a Basic HTTP Authorization header.
+If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the installed apps.
 
-#### Request
-- URL structure: `example.org/{groups}/{groupId}/subadmins`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `groupId`: identifier of group (string)
+| Status code | Meaning               |
+|-------------|-----------------------|
+|400|Invalid input data.|
+|401|Authentication was not successful.|
+|404|Group does not exist.|
+|500|Unknown failure.|
 
-#### Response
-##### Errors
-- 401: authentication was not successful
-- 404: group does not exist
-- 500: unknown failure
+## Get application information
+Get information about the specified application.
 
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of subadmins such as:
+### HTTP Request
+> Following request would delete the group "test":
 
-```xml
-<?xml version="1.0"?>
-<ocs>
-  <meta>
-    <statuscode>200</statuscode>
-    <status>ok</status>
-  </meta>
-  <data>
-    <users>
-      <!-- List of subadmins on the server  -->
-      <element>Tom</element>
-    </users>
-  </data>
-</ocs>
+```http
+GET /master/ocs/v2.php/cloud/apps/{appId} HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
 ```
 
-### Delete a group
-Removes a group. Authentication is done by sending a Basic HTTP Authorization header.
+`GET example.org/{apps}/{appId}`
 
-#### Request
-- URL structure: `example.org/{groups}/{groupId}`
-- HTTP method: DELETE
-- Scope: Authenticated
-- URL parameters:
-    - `groupId`: identifier of group (string)
+### URL parameters
+Parameter | Default 
+--------- | ------- 
+appId | ID of the app to get more information from.
 
-#### Response
-##### Errors
-- 401: authentication was not successful
-- 500: failed to delete group
-
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.
-
-### Get list of installed apps
-Returns a list of apps installed on the cloud server. Authentication is done by sending a Basic HTTP Authorization header.
-
-#### Request
-- URL structure: `example.org/{apps}`
-- HTTP method: GET
-- Scope: Authenticated
-
-#### Response
-##### Errors
-- 400: invalid input data
-- 401: authentication was not successful
-
-##### Success
-If the action could be performed a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of subadmins such as:
-
-```xml
-<?xml version="1.0"?>
-<ocs>
-  <meta>
-    <statuscode>200</statuscode>
-    <status>ok</status>
-  </meta>
-  <data>
-    <apps>
-      <!-- List of apps on the server  -->
-      <element>files</element>
-      <element>provisioning_api</element>
-    </apps>
-  </data>
-</ocs>
-```
-
-###Get application information
-Provides information about a specific application. Authentication is done by sending a Basic HTTP Authorization header.
-
-#### Request
-- URL structure: `example.org/{apps}/{appId}`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `appId`: identifier of app to request information from (string)
-
-#### Response
-##### Errors
-- 401: authentication was not successful
-- 404: application not found
-
-##### Success
-In case the action was successfully a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of information about the app, including at least:
+### Response
+> In case of success, a OCS success message without information about the app:
 
 ```xml
 <?xml version="1.0"?>
@@ -1476,44 +1822,98 @@ In case the action was successfully a successful OCS response object MUST be ret
 </ocs>
 ```
 
-###Enable application
-Enable an app. Authentication is done by sending a Basic HTTP Authorization header.
+In case the action was successfully a successful OCS response object MUST be returned by the server. The data element MUST contain a list of information about the app.
 
-#### Request
-- URL structure: `example.org/{apps}/{appId}`
-- HTTP method: POST
-- Scope: Authenticated
-- URL parameters:
-    - `appId`: identifier of app to enable (string)
 
-#### Response
-##### Errors
-- 401: authentication was not successful
+| Status code | Meaning               |
+|-------------|-----------------------|
+|204|Successful.|
+|401|Authentication was not successful or user is not permitted to perform this action.|
+|404|Application not found.|
 
-##### Success
-In case the action was successfully a successful OCS response object MUST be returned by the server.
+## Enable application
+Enable an app.
 
-### Disable application
-Disables the specified app. Authentication is done by sending a Basic HTTP Authorization header.
+### HTTP Request
+> Enables the application "activity":
 
-#### Request
-- URL structure: `example.org/{apps}/{appId}`
-- HTTP method: DELETE
-- Scope: Authenticated
-- URL parameters:
-    - `appId`: identifier of app to delete (string)
+```http
+POST /master/ocs/v2.php/cloud/apps/activity HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
 
-#### Response
-##### Errors
-- 401: authentication was not successful
+`POST example.org/{apps}/{appId}`
 
-##### Success
-In case the action was successfully a successful OCS response object MUST be returned by the server.
-According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist.
-The status code in case of a successful operation is 204/No Content.
+### Request Parameters
 
-Syntax: ocs/v2.php/cloud/apps/{appid}
+Parameter | Default | Description
+--------- | ------- | -----------
+appId || ID of the application to enable.
 
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
+The expected response MUST, in case of success, be a OCS success message.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+| 401 | Authentication was not successful. |
+
+## Disable application
+Disables the specified app. 
+
+### HTTP Request
+> Disables the application "activity":
+
+```http
+DELETE /master/ocs/v2.php/cloud/apps/activity HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`DELETE example.org/{apps}/{appId}`
+
+### Request Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+appId || ID of the application to disable.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
+
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
+
+The expected response MUST, in case of success, be a OCS success message.
+
+| Status code | Meaning               |
+|-------------|-----------------------|
+| 401 | Authentication was not successful. |
 
 # Private Data [Experimental]
 > A valid service definition looks as following:
