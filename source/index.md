@@ -45,7 +45,7 @@ Any secrets used to exchange data MUST be generated using a strong random number
 The service must be usable by a lot of users in parallel. Because of that it is important to build the architecture in a scalable way. Every component of the architecture must be cluster enabled, accessible in a parallel way and stateless.
 
 ### Cookies
-To work together with load-balanced environments consumers SHOULD resend any cookies as defined in [RFC 6265](http://tools.ietf.org/html/rfc6265). As stated in the "Authentication" section any Basic Auth authentication header MUST be resend.
+To work together with load-balanced environments consumers SHOULD resend any cookies as defined in [RFC 6265](http://tools.ietf.org/html/rfc6265). As stated in the "Authentication" section any Basic Auth authentication header MUST be resend as the session referenced by the cookie MAY expire.
 
 It shall be noted that OCS endpoints MUST behave properly regardless whether cookies are resent or not.
 
@@ -157,11 +157,15 @@ Clients SHOULD directly try HTTP Basic Authentication and not try to perform a D
 
 Authentication is performed by sending a Basic HTTP Authentication header. Thus OCS endpoints MUST support the Basic Auth Access Authentication system as defined in [RFC2617](https://tools.ietf.org/html/rfc2617). 
 
-The credentials provided in the Authentication header MUST be UTF-8 encoded. Taking `contrasea` as example the correct encoding would be `Y29udHJhc2XDsWE=`, any other encoding such as  ISO-8859-1 (`Y29udHJhc2XxYQ==`) is considered invalid and MUST NOT be used. 
+The credentials provided in the authentication header MUST be UTF-8 encoded. Taking `contrasea` as example the correct encoding would be `Y29udHJhc2XDsWE=`, any other encoding such as  ISO-8859-1 (`Y29udHJhc2XxYQ==`) is considered invalid and MUST NOT be used. 
 
 OCS compatible APIs MAY use cookies as defined in [RFC 6265](http://tools.ietf.org/html/rfc6265) to authenticate future requests as well, if after successful authentication the endpoint sends further cookies clients SHOULD resend these for future requests. However, any request MUST then include the Basic Authentication header as well as the provided cookies as the session might expire. When resending cookies consumers MUST add the following HTTP header to all requests: `OCS-REQUEST: true`.
 
 OCS endpoints MUST in all cases handle connections correctly regardless whether cookies are sent.
+
+<aside class="notice">
+The base64-encoded authentication header does not necessarily have to be the user credentials. The credentials could also be an unique and secret token used for authentication. (Token-based authentication)
+</aside>
 
 # Service Discovery
 The provider service list are used by OCS for service discovery purposes to allow mapping the provided services and endpoint URIs.
@@ -531,7 +535,7 @@ The `SHARING` module allows to handle file sharing on the same cloud instance. I
 5. Delete an existing share (`share`)
 6. Update an existing share (`share`)
 
-## Get list of shares
+## List of shares
 Get a list of all shared files for the currently logged-in user.
 
 ### HTTP Request
@@ -552,8 +556,8 @@ Parameter | Default | Description
 --------- | ------- | -----------
 shared_with_me | `false` | Whether files shared with the user should get displayed. Defaults to `false`, `true` to only display shares that the user received.
 path | '/' | Path to folder, if empty no restriction is set.
-reshares | `false` | Whether reshares should get returned.
-subfiles | `false` |  Whether all shares within the folder should be returned.
+reshares | `false` | Whether reshares should get returned. (optional)
+subfiles | `false` |  Whether all shares within the folder should be returned. (optional)
 
 ### Response
 > In case there are shares a successful OCS response object MUST be returned by the server, the shares MUST be embedded in the data element and at least consist of the following elements:
