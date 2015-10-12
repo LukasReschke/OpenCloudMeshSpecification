@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Open Collaboration Services v2 (WIP)</title>
 
-    <link href="stylesheets/screen.css" rel="stylesheet" type="text/css" media="screen" />
-    <link href="stylesheets/print.css" rel="stylesheet" type="text/css" media="print" />
+    <link href="stylesheets/screen-ea0b69b4.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="stylesheets/print-aa2b3685.css" rel="stylesheet" type="text/css" media="print" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-      <script src="javascripts/all.js" type="text/javascript"></script>
+      <script src="javascripts/all-feec414b.js" type="text/javascript"></script>
 
       <script>
         $(function() {
@@ -22,11 +22,11 @@
     <a href="#" id="nav-button">
       <span>
         NAV
-        <img src="images/navbar.png" />
+        <img src="images/navbar-cad8cdcb.png" />
       </span>
     </a>
     <div class="tocify-wrapper">
-      <img src="images/logo.png" />
+      <img src="images/logo-713dcb7e.png" />
         <div class="lang-selector">
               <a href="#" data-language-name="Examples">Examples</a>
         </div>
@@ -36,9 +36,6 @@
         <ul class="search-results"></ul>
       <div id="toc">
       </div>
-        <ul class="toc-footer">
-            <li><a href='https://github.com/LukasReschke/OpenCloudMeshSpecification'>Send Change Request</a></li>
-        </ul>
     </div>
     <div class="page-wrapper">
       <div class="dark-box"></div>
@@ -97,7 +94,7 @@
 
 <h3 id="secrets">Secrets</h3>
 
-<p>Any secrets used to exchange data MUST be generated using a strong random number generator (such as <code class="prettyprint">/dev/urandom</code>)</p>
+<p>Any secrets used to exchange data MUST be generated using a strong random number generator, such as <code class="prettyprint">/dev/urandom</code> or another cryptographically secure replacement.</p>
 
 <h2 id="performance-scalability">Performance / Scalability</h2>
 
@@ -154,11 +151,55 @@
 
 <p>If an invalid date format has been provided consumers and endpoints MAY stop processing the data. </p>
 
-<h2 id="output-format-ocs-format">Output format / OCS Format</h2>
+<h1 id="ocs-responses">OCS Responses</h1>
+
+<blockquote>
+<p>Example of a JSON OCS response, be aware that empty fields MUST have a value of <code class="prettyprint">null</code>: </p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+    </span><span class="nt">"ocs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"statuscode"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"users"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"Frank"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"admin"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"test"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"test1"</span><span class="w">
+            </span><span class="p">]</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<blockquote>
+<p>Example of a XML OCS response, be aware that empty fields MUST still be existent:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data&gt;</span>
+  <span class="nt">&lt;users&gt;</span>
+   <span class="c">&lt;!-- List of user names --&gt;</span>
+   <span class="nt">&lt;element&gt;</span>Frank<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>admin<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>test<span class="nt">&lt;/element&gt;</span>
+   <span class="nt">&lt;element&gt;</span>test1<span class="nt">&lt;/element&gt;</span>
+  <span class="nt">&lt;/users&gt;</span>
+ <span class="nt">&lt;/data&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
 
 <p>OCS endpoints MUST be able to output data in a XML format as well as a JSON representation. This means that the returned XML output SHALL NOT contain any attributes as these cannot be mapped properly to a JSON object.</p>
 
-<p>To specify the encoding a GET parameter <code class="prettyprint">format</code> can be by the customer send with one of the following values:</p>
+<p>To specify the encoding a GET parameter <code class="prettyprint">format</code> can be send by the consumer with one of the following values:</p>
 
 <ul>
 <li><code class="prettyprint">json</code>
@@ -182,79 +223,17 @@
 <li><code class="prettyprint">meta</code>: Array that contains meta information
 
 <ul>
-<li><code class="prettyprint">status</code>: The status of the response, either &ldquo;ok&rdquo; or &ldquo;fail&rdquo;. MUST be &ldquo;ok&rdquo; if statuscode is set to 200, &ldquo;fail&rdquo; otherwise.</li>
-<li><code class="prettyprint">statuscode</code>: The OCS status code of the response, everything except 200 MUST be handled as failure.</li>
+<li><code class="prettyprint">status</code>: The status of the response, either &ldquo;ok&rdquo; or &ldquo;fail&rdquo;. MUST be &ldquo;ok&rdquo; if statuscode is set to 100, &ldquo;fail&rdquo; otherwise.</li>
+<li><code class="prettyprint">statuscode</code>: The OCS status code of the response, everything except 100 MUST be handled as failure.</li>
 <li><code class="prettyprint">message</code>: An optional message that MAY contain a status message, such as a error message.</li>
 </ul></li>
 <li><code class="prettyprint">data</code>: Array that contains the actual response, content of the array depends completely on the endpoint.</li>
 </ul></li>
 </ul>
 
-<p>This means that a message MUST look like the following for XML responses, be aware that empty fields MUST still be existent:</p>
-<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
-<span class="nt">&lt;ocs&gt;</span>
- <span class="nt">&lt;meta&gt;</span>
-  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
-  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
-  <span class="nt">&lt;message/&gt;</span>
- <span class="nt">&lt;/meta&gt;</span>
- <span class="nt">&lt;data&gt;</span>
-  <span class="nt">&lt;users&gt;</span>
-   <span class="c">&lt;!-- List of user names --&gt;</span>
-   <span class="nt">&lt;element&gt;</span>Frank<span class="nt">&lt;/element&gt;</span>
-   <span class="nt">&lt;element&gt;</span>admin<span class="nt">&lt;/element&gt;</span>
-   <span class="nt">&lt;element&gt;</span>test<span class="nt">&lt;/element&gt;</span>
-   <span class="nt">&lt;element&gt;</span>test1<span class="nt">&lt;/element&gt;</span>
-  <span class="nt">&lt;/users&gt;</span>
- <span class="nt">&lt;/data&gt;</span>
-<span class="nt">&lt;/ocs&gt;</span>
-</code></pre>
-
-<p>The mapped JSON response MUST look like the following, be aware that empty fields MUST have a value of <code class="prettyprint">null</code>: </p>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-    </span><span class="nt">"ocs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-            </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w">
-            </span><span class="nt">"statuscode"</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w">
-            </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-            </span><span class="nt">"users"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-                </span><span class="s2">"Frank"</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"admin"</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"test"</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"test1"</span><span class="w">
-            </span><span class="p">]</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<h3 id="reserved-status-codes">Reserved status codes</h3>
-
-<p>The following status codes are reserved and MUST not be used for any other purposes. Other status codes indicate custom errors that can be used by modules. </p>
-
-<table><thead>
-<tr>
-<th>Statuscode</th>
-<th>Usage</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>200</td>
-<td>Success</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Authentication failed</td>
-</tr>
-<tr>
-<td>404</td>
-<td>Unknown request</td>
-</tr>
-</tbody></table>
-
-<p>Note that all responses MUST return a HTTP status code 200, the OCS status code is completely independent from this. In case of a fatal server error that makes the instance inaccessible a 5xx error MAY be acceptable.</p>
+<aside class="notice">
+The statuscode returned in the OCS response MAY differ by the HTTP status code. In the following module specifications the returned OCS and HTTP status codes are specified. In case of a fatal server error a 5xx error code is acceptable.
+</aside>
 
 <h1 id="authentication">Authentication</h1>
 <pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/{endpoint}</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
@@ -273,7 +252,7 @@
 
 <p>The credentials provided in the Authentication header MUST be UTF-8 encoded. Taking <code class="prettyprint">contrasea</code> as example the correct encoding would be <code class="prettyprint">Y29udHJhc2XDsWE=</code>, any other encoding such as  ISO-8859-1 (<code class="prettyprint">Y29udHJhc2XxYQ==</code>) is considered invalid and MUST NOT be used. </p>
 
-<p>OCS compatible APIs MAY use cookies as defined in <a href="http://tools.ietf.org/html/rfc6265">RFC 6265</a> to authenticate future requests as well, if after successful authentication the endpoint sends further cookies clients SHOULD resend these for future requests. However, any request MUST then include the Basic Authentication header as well as the provided cookies. When resending cookies consumers MUST add the following HTTP header to all requests: <code class="prettyprint">OCS-REQUEST: true</code>.</p>
+<p>OCS compatible APIs MAY use cookies as defined in <a href="http://tools.ietf.org/html/rfc6265">RFC 6265</a> to authenticate future requests as well, if after successful authentication the endpoint sends further cookies clients SHOULD resend these for future requests. However, any request MUST then include the Basic Authentication header as well as the provided cookies as the session might expire. When resending cookies consumers MUST add the following HTTP header to all requests: <code class="prettyprint">OCS-REQUEST: true</code>.</p>
 
 <p>OCS endpoints MUST in all cases handle connections correctly regardless whether cookies are sent.</p>
 
@@ -419,7 +398,7 @@
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">119</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
 
-shareWith=RecipientName&amp;token=MyRandomToken&amp;name=Documents&amp;remoteId=5&amp;owner=ShareingUser&amp;remote=http://localhost/master/
+shareWith=RecipientName&amp;token=MyRandomToken&amp;name=Documents&amp;remoteId=5&amp;owner=ShareingUser&amp;remote=http://localhost
 </code></pre>
 
 <p><code class="prettyprint">POST http://example.com/{share}</code></p>
@@ -485,20 +464,19 @@ shareWith=RecipientName&amp;token=MyRandomToken&amp;name=Documents&amp;remoteId=
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
 <td>400</td>
+<td>200</td>
 <td>Invalid parameters</td>
 </tr>
 <tr>
-<td>500</td>
-<td>Internal server error</td>
-</tr>
-<tr>
 <td>503</td>
+<td>200</td>
 <td>If the server does not support Federated Sharing (i.e. disabled by administrator)</td>
 </tr>
 </tbody></table>
@@ -580,12 +558,14 @@ token=TjuMOB1as7iZ1c6
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
 <td>503</td>
+<td>200</td>
 <td>If the server does not support Federated Sharing (i.e. disabled by administrator)</td>
 </tr>
 </tbody></table>
@@ -663,12 +643,19 @@ token=TjuMOB1as7iZ1c6
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>400</td>
+<td>200</td>
+<td>Invalid parameters</td>
+</tr>
+<tr>
 <td>503</td>
+<td>200</td>
 <td>If the server does not support Federated Sharing (i.e. disabled by administrator)</td>
 </tr>
 </tbody></table>
@@ -750,12 +737,19 @@ token=kW1gR9TRKXW9Jwk
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>400</td>
+<td>200</td>
+<td>Invalid parameters</td>
+</tr>
+<tr>
 <td>503</td>
+<td>200</td>
 <td>If the server does not support Federated Sharing (i.e. disabled by administrator)</td>
 </tr>
 </tbody></table>
@@ -817,7 +811,7 @@ This request needs to be sent to the sending instance by the receiving instance.
 <blockquote>
 <p>Lists all shares of the user admin with the password admin:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/apps/files_sharing/api/v1/shares</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -889,21 +883,25 @@ This request needs to be sent to the sending instance by the receiving instance.
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
 <td>400</td>
-<td>Not a directory (if the <code class="prettyprint">subfile</code> argument was used)</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Authentication was not successful.</td>
+<td>200</td>
+<td>Not a folder (if the <code class="prettyprint">subfile</code> argument was used)</td>
 </tr>
 <tr>
 <td>404</td>
+<td>200</td>
 <td>User has no shared files or folder does not exist.</td>
+</tr>
+<tr>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -916,7 +914,7 @@ This request needs to be sent to the sending instance by the receiving instance.
 <blockquote>
 <p>Following request would request information about the share with the ID &ldquo;1&rdquo; under the context of the user &ldquo;admin&rdquo;.</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/apps/files_sharing/api/v1/shares/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -974,17 +972,20 @@ This request needs to be sent to the sending instance by the receiving instance.
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>401</td>
-<td>Authentication was not successful</td>
+<td>404</td>
+<td>200</td>
+<td>Share does not exist.</td>
 </tr>
 <tr>
-<td>404</td>
-<td>Share does not exist.</td>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -999,7 +1000,7 @@ This request needs to be sent to the sending instance by the receiving instance.
 <blockquote>
 <p>Following request will share the file <code class="prettyprint">/welcome.txt</code> of the user <code class="prettyprint">admin</code> with the user <code class="prettyprint">test</code>:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/apps/files_sharing/api/v1/shares</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1085,21 +1086,25 @@ path=/welcome.txt&amp;shareType=0&amp;shareWith=test
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
 <td>400</td>
+<td>200</td>
 <td>Unknown share type.</td>
 </tr>
 <tr>
-<td>401</td>
-<td>Authentication was not successful.</td>
+<td>404</td>
+<td>200</td>
+<td>File could not get shared.</td>
 </tr>
 <tr>
-<td>404</td>
-<td>File couldnt get shared.</td>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -1112,7 +1117,7 @@ path=/welcome.txt&amp;shareType=0&amp;shareWith=test
 <blockquote>
 <p>Following request will delete the share with the id <code class="prettyprint">1</code> of the user <code class="prettyprint">admin</code>:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/ocs/v2.php/apps/files_sharing/api/v1/shares/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1152,17 +1157,20 @@ path=/welcome.txt&amp;shareType=0&amp;shareWith=test
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>401</td>
-<td>Authentication was not successful.</td>
+<td>404</td>
+<td>200</td>
+<td>Share could not get unshared.</td>
 </tr>
 <tr>
-<td>404</td>
-<td>Share could not get unshared.</td>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -1175,7 +1183,7 @@ path=/welcome.txt&amp;shareType=0&amp;shareWith=test
 <blockquote>
 <p>Following request will set the permissions of the share with the id <code class="prettyprint">9</code> to `31:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">PUT</span> <span class="nn">/master/ocs/v2.php/apps/files_sharing/api/v1/shares/9</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">PUT</span> <span class="nn">/ocs/v2.php/apps/files_sharing/api/v1/shares/9</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1245,25 +1253,30 @@ permissions=31
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
 <td>400</td>
-<td>Wrong or no update parameter given.</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Authentication was not successful.</td>
+<td>200</td>
+<td>Invalid parameters.</td>
 </tr>
 <tr>
 <td>403</td>
+<td>200</td>
 <td>Public upload disabled by the admin.</td>
 </tr>
 <tr>
 <td>404</td>
-<td>Could not update share.</td>
+<td>200</td>
+<td>Share could not get updated.</td>
+</tr>
+<tr>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -1290,14 +1303,13 @@ permissions=31
 <h3 id="http-request">HTTP Request</h3>
 
 <blockquote>
-<p>Following request would request the data of the user <code class="prettyprint">admin</code>:
-<code class="prettyprint">http
-GET /ocs/v2.php/cloud/activity HTTP/1.1
-Host: localhost
-Authorization: Basic YWRtaW46YWRtaW4=
-OCS-REQUEST: true
-</code></p>
+<p>Following request would request the data of the user <code class="prettyprint">admin</code>:</p>
 </blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/cloud/activity</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
 <p><code class="prettyprint">POST http://example.com/{list}</code></p>
 
@@ -1361,6 +1373,20 @@ OCS-REQUEST: true
 
 <p>In case a start or count parameter is specified endpoints MUST return the newest entries first to allow consumers to chunk the event transmission.</p>
 
+<table><thead>
+<tr>
+<th>OCS status code</th>
+<th>HTTP status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+</tbody></table>
+
 <h1 id="provisoning-experimental">Provisoning [Experimental]</h1>
 
 <blockquote>
@@ -1421,7 +1447,7 @@ OCS-REQUEST: true
 <blockquote>
 <p>Creates an user &ldquo;newUser&rdquo; with the password &ldquo;newPassword&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v2.php/cloud/users</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/cloud/users</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1474,25 +1500,25 @@ userid=newUser&amp;password=newPassword
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>102</td>
+<td>200</td>
+<td>User already exists.</td>
+</tr>
+<tr>
 <td>400</td>
+<td>200</td>
 <td>Invalid input data.</td>
 </tr>
 <tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
-</tr>
-<tr>
-<td>409 </td>
-<td>Username already exists.</td>
-</tr>
-<tr>
-<td>500</td>
-<td>Unknown error occurred whilst adding the user. </td>
 </tr>
 </tbody></table>
 
@@ -1505,7 +1531,7 @@ userid=newUser&amp;password=newPassword
 <blockquote>
 <p>Request a list of users:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/cloud/users</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/cloud/users</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1566,11 +1592,13 @@ userid=newUser&amp;password=newPassword
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
 </tr>
@@ -1585,7 +1613,7 @@ userid=newUser&amp;password=newPassword
 <blockquote>
 <p>To request information about an user called &ldquo;admin&rdquo; the following request would be valid: </p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/cloud/users/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/cloud/users/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1644,16 +1672,19 @@ userid=newUser&amp;password=newPassword
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
 </tr>
 <tr>
-<td>404</td>
+<td>998</td>
+<td>200</td>
 <td>User not found.</td>
 </tr>
 </tbody></table>
@@ -1667,7 +1698,7 @@ userid=newUser&amp;password=newPassword
 <blockquote>
 <p>Following request would change the password of the user &ldquo;admin&rdquo; to &ldquo;NewUserPassword&rdquo;;</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">PUT</span> <span class="nn">/master/ocs/v2.php/cloud/users/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">PUT</span> <span class="nn">/ocs/v2.php/cloud/users/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1734,21 +1765,15 @@ key=password&amp;value=NewUserPassword
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>400</td>
-<td>Invalid input data.</td>
-</tr>
-<tr>
+<td>997</td>
 <td>401</td>
-<td>authentication was not successful or invalid key.</td>
-</tr>
-<tr>
-<td>404</td>
-<td>User not found.</td>
+<td>Authentication was not successful or user not found.</td>
 </tr>
 </tbody></table>
 
@@ -1803,13 +1828,15 @@ key=password&amp;value=NewUserPassword
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
-<td>Authentication was not successful or user is not permitted to perform this action.</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -1822,7 +1849,7 @@ key=password&amp;value=NewUserPassword
 <blockquote>
 <p>Following request would get the membership information of the user named &ldquo;test&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/cloud/users/test/group</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/cloud/users/test/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1869,13 +1896,15 @@ key=password&amp;value=NewUserPassword
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
-<td>Authentication was not successful or user is not permitted to perform this action.</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -1888,7 +1917,7 @@ key=password&amp;value=NewUserPassword
 <blockquote>
 <p>Following request adds the user &ldquo;test&rdquo; to the group &ldquo;admin&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v2.php/cloud/users/test/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/cloud/users/test/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -1952,17 +1981,20 @@ groupid=admin
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>400</td>
-<td>Invalid input data.</td>
+<td>103</td>
+<td>200</td>
+<td>Failed to add user to group.</td>
 </tr>
 <tr>
+<td>997</td>
 <td>401</td>
-<td>Failed to add user to group.</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -1975,7 +2007,7 @@ groupid=admin
 <blockquote>
 <p>Following request removes the user &ldquo;test&rdquo; from the group &ldquo;admin&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v2.php/cloud/users/test/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/ocs/v2.php/cloud/users/test/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2039,21 +2071,20 @@ groupid=admin
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>400</td>
-<td>Invalid input data.</td>
-</tr>
-<tr>
-<td>403</td>
-<td>Insufficient privileges.</td>
-</tr>
-<tr>
-<td>500</td>
+<td>103</td>
+<td>200</td>
 <td>Failed to remove user from group.</td>
+</tr>
+<tr>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -2066,7 +2097,7 @@ groupid=admin
 <blockquote>
 <p>Following request would make the user &ldquo;test&rdquo; a subadmin of the group &ldquo;admin&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2126,29 +2157,20 @@ groupid=admin
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>401</td>
-<td>Authentication was not successful or user is not permitted to perform this action.</td>
+<td>101</td>
+<td>200</td>
+<td>User or group not found.</td>
 </tr>
 <tr>
-<td>404</td>
-<td>User does not exist.</td>
-</tr>
-<tr>
-<td>404</td>
-<td>Group does not exist.</td>
-</tr>
-<tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
-</tr>
-<tr>
-<td>500</td>
-<td>Unknown failure.</td>
 </tr>
 </tbody></table>
 
@@ -2161,7 +2183,7 @@ groupid=admin
 <blockquote>
 <p>Following request would remove the subadmin privileges of user &ldquo;test&rdquo; from &ldquo;admin&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2222,19 +2244,13 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>204</td>
-<td>Successful.</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Authentication was not successful or user is not permitted to perform this action.</td>
-</tr>
-<tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
 </tr>
@@ -2249,7 +2265,7 @@ According to general requirements of DELETE being an idempotent operation succes
 <blockquote>
 <p>Following request would list all groups that the user &ldquo;test&rdquo; is a subadmin of.</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v1.php/cloud/users/test/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2294,25 +2310,20 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>101</td>
 <td>200</td>
-<td>Successful.</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Authentication was not successful.</td>
-</tr>
-<tr>
-<td>404</td>
 <td>User does not exist.</td>
 </tr>
 <tr>
-<td>500</td>
-<td>Unknown failure.</td>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -2325,7 +2336,7 @@ According to general requirements of DELETE being an idempotent operation succes
 <blockquote>
 <p>Following request would get a list of all groups on the server:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v1.php/cloud/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2378,21 +2389,15 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
-</tr>
-<tr>
-<td>404</td>
-<td>User does not exist.</td>
-</tr>
-<tr>
-<td>500</td>
-<td>Unknown failure.</td>
 </tr>
 </tbody></table>
 
@@ -2405,7 +2410,7 @@ According to general requirements of DELETE being an idempotent operation succes
 <blockquote>
 <p>Following request would create a group with the name &ldquo;NewGroup&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v1.php/cloud/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v1.php/cloud/groups</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2453,29 +2458,20 @@ groupid=NewGroup
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>201</td>
-<td>Successful.</td>
-</tr>
-<tr>
-<td>400</td>
-<td>Invalid input data.</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Authentication was not successful.</td>
-</tr>
-<tr>
-<td>409</td>
+<td>102</td>
+<td>200</td>
 <td>Group already exists.</td>
 </tr>
 <tr>
-<td>500</td>
-<td>Failed to create the group.</td>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -2488,7 +2484,7 @@ groupid=NewGroup
 <blockquote>
 <p>Following request would get the membership information of the user named &ldquo;test&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/groups/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v1.php/cloud/groups/admin</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2535,13 +2531,15 @@ groupid=NewGroup
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
-<td>Authentication was not successful or user is not permitted to perform this action.</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -2554,7 +2552,7 @@ groupid=NewGroup
 <blockquote>
 <p>Following request would get the membership information of the user named &ldquo;test&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/groups/admin/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v1.php/cloud/groups/admin/subadmins</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2601,21 +2599,20 @@ groupid=NewGroup
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
 </tr>
 <tr>
-<td>404</td>
+<td>998</td>
+<td>200</td>
 <td>Group does not exist.</td>
-</tr>
-<tr>
-<td>500</td>
-<td>Unknown failure.</td>
 </tr>
 </tbody></table>
 
@@ -2628,7 +2625,7 @@ groupid=NewGroup
 <blockquote>
 <p>Following request would delete the group &ldquo;test&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v1.php/cloud/groups/test</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/ocs/v1.php/cloud/groups/test</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2671,21 +2668,25 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>204</td>
-<td>Successful.</td>
+<td>101</td>
+<td>200</td>
+<td>Group does not exist.</td>
 </tr>
 <tr>
-<td>401</td>
-<td>Authentication was not successful or user is not permitted to perform this action.</td>
-</tr>
-<tr>
-<td>401</td>
+<td>102</td>
+<td>200</td>
 <td>Failed to delete group.</td>
+</tr>
+<tr>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
@@ -2698,7 +2699,7 @@ According to general requirements of DELETE being an idempotent operation succes
 <blockquote>
 <p>Following request would get a list of all installed apps.</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v1.php/cloud/apps</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v1.php/cloud/apps</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2733,25 +2734,15 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>400</td>
-<td>Invalid input data.</td>
-</tr>
-<tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
-</tr>
-<tr>
-<td>404</td>
-<td>Group does not exist.</td>
-</tr>
-<tr>
-<td>500</td>
-<td>Unknown failure.</td>
 </tr>
 </tbody></table>
 
@@ -2762,9 +2753,9 @@ According to general requirements of DELETE being an idempotent operation succes
 <h3 id="http-request">HTTP Request</h3>
 
 <blockquote>
-<p>Following request would delete the group &ldquo;test&rdquo;:</p>
+<p>Following request would get information about the app &ldquo;files&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/master/ocs/v2.php/cloud/apps/{appId}</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/cloud/apps/files</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2789,7 +2780,7 @@ According to general requirements of DELETE being an idempotent operation succes
 <h3 id="response">Response</h3>
 
 <blockquote>
-<p>In case of success, a OCS success message without information about the app:</p>
+<p>In case of success, a OCS success message with more information about the app:</p>
 </blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
@@ -2812,20 +2803,19 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>204</td>
-<td>Successful.</td>
-</tr>
-<tr>
+<td>997</td>
 <td>401</td>
-<td>Authentication was not successful or user is not permitted to perform this action.</td>
+<td>Authentication was not successful.</td>
 </tr>
 <tr>
-<td>404</td>
+<td>998</td>
+<td>200</td>
 <td>Application not found.</td>
 </tr>
 </tbody></table>
@@ -2839,7 +2829,7 @@ According to general requirements of DELETE being an idempotent operation succes
 <blockquote>
 <p>Enables the application &ldquo;activity&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/master/ocs/v2.php/cloud/apps/activity</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/cloud/apps/activity</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2883,11 +2873,13 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
 </tr>
@@ -2902,7 +2894,7 @@ According to general requirements of DELETE being an idempotent operation succes
 <blockquote>
 <p>Disables the application &ldquo;activity&rdquo;:</p>
 </blockquote>
-<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/master/ocs/v2.php/cloud/apps/activity</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<pre class="highlight http"><code><span class="nf">DELETE</span> <span class="nn">/ocs/v2.php/cloud/apps/activity</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
 <span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
 <span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
@@ -2946,11 +2938,13 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <table><thead>
 <tr>
-<th>Status code</th>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
+<td>997</td>
 <td>401</td>
 <td>Authentication was not successful.</td>
 </tr>
@@ -2990,68 +2984,143 @@ According to general requirements of DELETE being an idempotent operation succes
 
 <p>Sets a value in the key-value store for the currently logged-in user.</p>
 
-<h4 id="request">Request</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{store}/{storeName}/{key}</code></li>
-<li>HTTP method: POST</li>
-<li>Scope: Authenticated</li>
-<li>Arguments:</li>
-<li>URL parameters:
+<blockquote>
+<p>Stores the value &ldquo;myValue&rdquo; in the key &ldquo;myKey&rdquo; in the &ldquo;myStore&rdquo; store:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/privatedata/setattribute/myStore/myKey</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">13</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
 
-<ul>
-<li><code class="prettyprint">storeName</code>: Name of the store (string)</li>
-<li><code class="prettyprint">key</code>: Name of they key (string)</li>
-</ul></li>
-<li>Required arguments:
+value=myValue
+</code></pre>
 
-<ul>
-<li><code class="prettyprint">value</code>: Value that should get stored (string)</li>
-</ul></li>
-</ul>
+<p><code class="prettyprint">POST example.org/{store}/{storeName}/{key}</code></p>
 
-<h5 id="success">Success</h5>
+<h3 id="url-parameters">URL Parameters</h3>
 
-<p>The response MUST be a OCS success message.</p>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>storeName</td>
+<td></td>
+<td>Store under which the value should get stored.</td>
+</tr>
+<tr>
+<td>key</td>
+<td></td>
+<td>Key of the value.</td>
+</tr>
+</tbody></table>
 
-<h3 id="get-all-values-of-store">Get all values of store</h3>
+<h3 id="request-parameters">Request Parameters</h3>
 
-<p>Get all key-values stored within a specific store for the currently logged-in user.</p>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>value</td>
+<td></td>
+<td>Value of the key.</td>
+</tr>
+</tbody></table>
 
-<h4 id="request">Request</h4>
+<h3 id="response">Response</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{store}/{storeName}/{key}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
-
-<ul>
-<li><code class="prettyprint">storeName</code>: Name of the store (string)</li>
-<li><code class="prettyprint">key</code>: Name of they key (string)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="error">Error</h5>
-
-<ul>
-<li>401: authentication was not successful</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>The response MUST be a OCS success message and MUST contain a <code class="prettyprint">data</code> array containing the elements, for example:</p>
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
 <pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
 <span class="nt">&lt;ocs&gt;</span>
  <span class="nt">&lt;meta&gt;</span>
   <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
-  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response MUST, in case of success, be a OCS success message.</p>
+
+<table><thead>
+<tr>
+<th>OCS status code</th>
+<th>HTTP status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-values-of-key">Get values of key</h2>
+
+<p>Get all value of a key stored within a specific store for the currently logged-in user.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<blockquote>
+<p>Get the value of the the key &ldquo;myKey&rdquo; in the &ldquo;myStore&rdquo; store:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/ocs/v2.php/privatedata/getattribute/myStore/myKey</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
+
+<p><code class="prettyprint">GET example.org/{read}/{storeName}/{key}</code></p>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>storeName</td>
+<td></td>
+<td>Store under which the value should get looked-up.</td>
+</tr>
+<tr>
+<td>key</td>
+<td></td>
+<td>Key of the value to look-up.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case there is an entry a successful OCS response object MUST be returned by the server, the values MUST be embedded in the data element and at least consist of the following elements:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
   <span class="nt">&lt;message/&gt;</span>
  <span class="nt">&lt;/meta&gt;</span>
  <span class="nt">&lt;data&gt;</span>
-  <span class="c">&lt;!-- List of stored values --&gt;</span>
   <span class="nt">&lt;element&gt;</span>
    <span class="c">&lt;!-- Key of the stored value --&gt;</span>
    <span class="nt">&lt;key&gt;</span>MyKey<span class="nt">&lt;/key&gt;</span>
@@ -3060,118 +3129,93 @@ According to general requirements of DELETE being an idempotent operation succes
    <span class="c">&lt;!-- Value to store --&gt;</span>   
    <span class="nt">&lt;value&gt;</span>ValueToStore<span class="nt">&lt;/value&gt;</span>
   <span class="nt">&lt;/element&gt;</span>
-  <span class="nt">&lt;element&gt;</span>
-   <span class="nt">&lt;key&gt;</span>AnotherKey<span class="nt">&lt;/key&gt;</span>
-   <span class="nt">&lt;app&gt;</span>MyStore<span class="nt">&lt;/app&gt;</span>
-   <span class="nt">&lt;value&gt;</span>AnotherValue<span class="nt">&lt;/value&gt;</span>
-  <span class="nt">&lt;/element&gt;</span>
  <span class="nt">&lt;/data&gt;</span>
 <span class="nt">&lt;/ocs&gt;</span>
 </code></pre>
 
-<p>In case a store does not contain any values providers MUST return an empty data representation but MUST NOT return any error.</p>
+<p>The expected response MUST, in case of success, be a OCS success message containing the requested key-value entry.</p>
 
-<h2 id="get-value">Get value</h2>
-
-<p>Get the value of a key stored within a specific store for the currently logged-in user.</p>
-
-<h4 id="request">Request</h4>
-
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{read}/{storeName}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
-
-<ul>
-<li><code class="prettyprint">storeName</code>: Name of the store (string)</li>
-</ul></li>
-</ul>
-
-<h4 id="response">Response</h4>
-
-<h5 id="error">Error</h5>
-
-<ul>
-<li>401: authentication was not successful</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>The response MUST be a OCS success message and MUST contain a <code class="prettyprint">data</code> array containing the elements, for example:</p>
-<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
-<span class="nt">&lt;ocs&gt;</span>
- <span class="nt">&lt;meta&gt;</span>
-  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
-  <span class="nt">&lt;statuscode&gt;</span>200<span class="nt">&lt;/statuscode&gt;</span>
-  <span class="nt">&lt;message/&gt;</span>
- <span class="nt">&lt;/meta&gt;</span>
- <span class="nt">&lt;data&gt;</span>
-  <span class="nt">&lt;element&gt;</span>
-   <span class="c">&lt;!-- Key of the stored value --&gt;</span>
-   <span class="nt">&lt;key&gt;</span>MyKey<span class="nt">&lt;/key&gt;</span>
-   <span class="c">&lt;!-- Store in which the data is stored, internally represented as "app" --&gt;</span>
-   <span class="nt">&lt;app&gt;</span>MyStore<span class="nt">&lt;/app&gt;</span>
-   <span class="c">&lt;!-- Value to store --&gt;</span>   
-   <span class="nt">&lt;value&gt;</span>ValueToStore<span class="nt">&lt;/value&gt;</span>
-  <span class="nt">&lt;/element&gt;</span>
- <span class="nt">&lt;/data&gt;</span>
-<span class="nt">&lt;/ocs&gt;</span>
-</code></pre>
-
-<p>In case a key does not contain a value providers MUST return an empty data representation but MUST NOT return any error.</p>
+<table><thead>
+<tr>
+<th>OCS status code</th>
+<th>HTTP status code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>997</td>
+<td>401</td>
+<td>Authentication was not successful.</td>
+</tr>
+</tbody></table>
 
 <h2 id="delete-entry">Delete entry</h2>
 
 <p>Get the value of a key stored within a specific store for the currently logged-in user.</p>
 
-<h4 id="request">Request</h4>
+<h3 id="http-request">HTTP Request</h3>
 
-<ul>
-<li>URL structure: <code class="prettyprint">example.org/{delete}/{storeName}/{key}</code></li>
-<li>HTTP method: GET</li>
-<li>Scope: Authenticated</li>
-<li>URL parameters:
+<blockquote>
+<p>Deletes the key &ldquo;myKey&rdquo; in the &ldquo;myStore&rdquo; store:</p>
+</blockquote>
+<pre class="highlight http"><code><span class="nf">POST</span> <span class="nn">/ocs/v2.php/privatedata/deleteattribute/myStore/myKey</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Basic YWRtaW46YWRtaW4=</span>
+<span class="na">OCS-REQUEST</span><span class="p">:</span> <span class="s">true</span>
+</code></pre>
 
-<ul>
-<li><code class="prettyprint">storeName</code>: Name of the store (string)</li>
-<li><code class="prettyprint">key</code>: Name of they key (string)</li>
-</ul></li>
-</ul>
+<p><code class="prettyprint">POST example.org/{delete}/{storeName}/{key}</code></p>
 
-<h4 id="response">Response</h4>
-
-<h5 id="error">Error</h5>
-
-<ul>
-<li>401: authentication was not successful</li>
-</ul>
-
-<h5 id="success">Success</h5>
-
-<p>The response MUST be a OCS success message.</p>
-
-<h1 id="errors-amp-status-codes">Errors &amp; Status codes</h1>
-
-<p>OCS uses the following error codes returned as HTTP statuscode. The following status codes are reserved and MUST not be used for any other purposes. Other status codes indicate custom errors that can be used by modules. </p>
+<h3 id="url-parameters">URL Parameters</h3>
 
 <table><thead>
 <tr>
-<th>Statuscode</th>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>storeName</td>
+<td></td>
+<td>Store under which the value should get deleted.</td>
+</tr>
+<tr>
+<td>key</td>
+<td></td>
+<td>Key to delete.</td>
+</tr>
+</tbody></table>
+
+<h3 id="response">Response</h3>
+
+<blockquote>
+<p>In case of success, a OCS success message without further details is returned:</p>
+</blockquote>
+<pre class="highlight xml"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;ocs&gt;</span>
+ <span class="nt">&lt;meta&gt;</span>
+  <span class="nt">&lt;status&gt;</span>ok<span class="nt">&lt;/status&gt;</span>
+  <span class="nt">&lt;statuscode&gt;</span>100<span class="nt">&lt;/statuscode&gt;</span>
+  <span class="nt">&lt;message/&gt;</span>
+ <span class="nt">&lt;/meta&gt;</span>
+ <span class="nt">&lt;data/&gt;</span>
+<span class="nt">&lt;/ocs&gt;</span>
+</code></pre>
+
+<p>The expected response MUST, in case of success, be a OCS success message.</p>
+
+<table><thead>
+<tr>
+<th>OCS status code</th>
+<th>HTTP status code</th>
 <th>Meaning</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>200</td>
-<td>Success</td>
-</tr>
-<tr>
+<td>997</td>
 <td>401</td>
-<td>Authentication failed</td>
-</tr>
-<tr>
-<td>404</td>
-<td>Unknown request</td>
+<td>Authentication was not successful.</td>
 </tr>
 </tbody></table>
 
