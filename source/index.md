@@ -4,9 +4,6 @@ title: Open Collaboration Services v2 (WIP)
 language_tabs:
   - Examples
 
-toc_footers:
-  - <a href='https://github.com/LukasReschke/OpenCloudMeshSpecification'>Send Change Request</a>
-
 search: true
 ---
 
@@ -17,7 +14,6 @@ This document defines APIs and protocols to enable integration between different
 "OCS v2.0" consists of a set of API endpoints mainly targeted to be implemented by consumers and providers of file storage / sharing servers ("cloud").
 
 The goal is to enable Integration of cloud services, web services and social communities with each other, with desktop and mobile applications. This must be done in a decentralized and federated way, free and secure, privacy protected and vendor independent. OCS aims to solve these problems.
-
 
 ## Notational Conventions
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC2119](https://tools.ietf.org/html/rfc2119).
@@ -32,7 +28,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 - **"Provider service list":** 
   - A JSON configuration endpoint which specifies which services are provided by a server or service provider.
 - **"Module" or "service":**
-    - OCS is aimed to be a modular system allowing providers to only implement the required subsets. Any functionality is thus encapsulated in so called "modules" or "services" which are all optional.
+  - OCS is aimed to be a modular system allowing providers to only implement the required subsets. Any functionality is thus encapsulated in so called "modules" or "services" which are all optional.
 
 ## Security Considerations
 ### Transmission layer
@@ -43,7 +39,7 @@ Consumers MUST properly validate the certificate chain and in case of an error c
 For enhanced security Consumers MAY follow the Public Key Pinning Extension for HTTP ([RFC 7469](http://www.rfc-editor.org/rfc/rfc7469.txt)) as well as other HTTP security best practices.
 
 ### Secrets
-Any secrets used to exchange data MUST be generated using a strong random number generator (such as `/dev/urandom`)
+Any secrets used to exchange data MUST be generated using a strong random number generator, such as `/dev/urandom` or another cryptographically secure replacement.
 
 ## Performance / Scalability
 The service must be usable by a lot of users in parallel. Because of that it is important to build the architecture in a scalable way. Every component of the architecture must be cluster enabled, accessible in a parallel way and stateless.
@@ -78,34 +74,38 @@ Consumers as well as endpoints SHALL NOT make assumption about the representatio
 
 If an invalid date format has been provided consumers and endpoints MAY stop processing the data. 
 
+# OCS Responses
 
-## Output format / OCS Format
-OCS endpoints MUST be able to output data in a XML format as well as a JSON representation. This means that the returned XML output SHALL NOT contain any attributes as these cannot be mapped properly to a JSON object.
+> Example of a JSON OCS response, be aware that empty fields MUST have a value of `null`: 
 
-To specify the encoding a GET parameter `format` can be by the customer send with one of the following values:
+```json
+{
+    "ocs": {
+        "meta": {
+            "status": "ok",
+            "statuscode": 100,
+            "message": null
+        },
+        "data": {
+            "users": [
+                "Frank",
+                "admin",
+                "test",
+                "test1"
+            ]
+        }
+    }
+}
+```
 
-- `json`
-  - Returns a JSON formatted output, the Content-Type MUST be set to `application/json; charset=utf-8`
-- `xml`
-  - Returns a XML formatted output, the Content-Type MUST be set to `text/xml; charset=UTF-8`
-
-A OCS response MUST consist of the following elements:
-
-- `ocs`: Array that contains the whole response
-    - `meta`: Array that contains meta information
-        - `status`: The status of the response, either "ok" or "fail". MUST be "ok" if statuscode is set to 200, "fail" otherwise.
-        - `statuscode`: The OCS status code of the response, everything except 200 MUST be handled as failure.
-        - `message`: An optional message that MAY contain a status message, such as a error message.
-    - `data`: Array that contains the actual response, content of the array depends completely on the endpoint.
-
-This means that a message MUST look like the following for XML responses, be aware that empty fields MUST still be existent:
+> Example of a XML OCS response, be aware that empty fields MUST still be existent:
 
 ```xml
 <?xml version="1.0"?>
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>200</statuscode>
+  <statuscode>100</statuscode>
   <message/>
  </meta>
  <data>
@@ -120,38 +120,27 @@ This means that a message MUST look like the following for XML responses, be awa
 </ocs>
 ```
 
-The mapped JSON response MUST look like the following, be aware that empty fields MUST have a value of `null`: 
+OCS endpoints MUST be able to output data in a XML format as well as a JSON representation. This means that the returned XML output SHALL NOT contain any attributes as these cannot be mapped properly to a JSON object.
 
-```json
-{
-    "ocs": {
-        "meta": {
-            "status": "ok",
-            "statuscode": 200,
-            "message": null
-        },
-        "data": {
-            "users": [
-                "Frank",
-                "admin",
-                "test",
-                "test1"
-            ]
-        }
-    }
-}
-```
-### Reserved status codes
+To specify the encoding a GET parameter `format` can be send by the consumer with one of the following values:
 
-The following status codes are reserved and MUST not be used for any other purposes. Other status codes indicate custom errors that can be used by modules. 
+- `json`
+  - Returns a JSON formatted output, the Content-Type MUST be set to `application/json; charset=utf-8`
+- `xml`
+  - Returns a XML formatted output, the Content-Type MUST be set to `text/xml; charset=UTF-8`
 
-| Statuscode | Usage                 |
-|------------|-----------------------|
-| 200        | Success               |
-| 401        | Authentication failed |
-| 404        | Unknown request       |
+A OCS response MUST consist of the following elements:
 
-Note that all responses MUST return a HTTP status code 200, the OCS status code is completely independent from this. In case of a fatal server error that makes the instance inaccessible a 5xx error MAY be acceptable.
+- `ocs`: Array that contains the whole response
+    - `meta`: Array that contains meta information
+        - `status`: The status of the response, either "ok" or "fail". MUST be "ok" if statuscode is set to 100, "fail" otherwise.
+        - `statuscode`: The OCS status code of the response, everything except 100 MUST be handled as failure.
+        - `message`: An optional message that MAY contain a status message, such as a error message.
+    - `data`: Array that contains the actual response, content of the array depends completely on the endpoint.
+
+<aside class="notice">
+The statuscode returned in the OCS response MAY differ by the HTTP status code. In the following module specifications the returned OCS and HTTP status codes are specified. In case of a fatal server error a 5xx error code is acceptable.
+</aside>
 
 # Authentication
 
@@ -170,7 +159,7 @@ Authentication is performed by sending a Basic HTTP Authentication header. Thus 
 
 The credentials provided in the Authentication header MUST be UTF-8 encoded. Taking `contrasea` as example the correct encoding would be `Y29udHJhc2XDsWE=`, any other encoding such as  ISO-8859-1 (`Y29udHJhc2XxYQ==`) is considered invalid and MUST NOT be used. 
 
-OCS compatible APIs MAY use cookies as defined in [RFC 6265](http://tools.ietf.org/html/rfc6265) to authenticate future requests as well, if after successful authentication the endpoint sends further cookies clients SHOULD resend these for future requests. However, any request MUST then include the Basic Authentication header as well as the provided cookies. When resending cookies consumers MUST add the following HTTP header to all requests: `OCS-REQUEST: true`.
+OCS compatible APIs MAY use cookies as defined in [RFC 6265](http://tools.ietf.org/html/rfc6265) to authenticate future requests as well, if after successful authentication the endpoint sends further cookies clients SHOULD resend these for future requests. However, any request MUST then include the Basic Authentication header as well as the provided cookies as the session might expire. When resending cookies consumers MUST add the following HTTP header to all requests: `OCS-REQUEST: true`.
 
 OCS endpoints MUST in all cases handle connections correctly regardless whether cookies are sent.
 
@@ -289,7 +278,7 @@ Host: localhost
 Content-Length: 119
 Content-Type: application/x-www-form-urlencoded
 
-shareWith=RecipientName&token=MyRandomToken&name=Documents&remoteId=5&owner=ShareingUser&remote=http://localhost/master/
+shareWith=RecipientName&token=MyRandomToken&name=Documents&remoteId=5&owner=ShareingUser&remote=http://localhost
 ```
 
 `POST http://example.com/{share}`
@@ -322,11 +311,10 @@ remote | | URI of the sending instance.
 
 The expected response is, in case of success, a OCS success message. In error cases the following OCS status codes MUST be used:
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 400 | Invalid parameters|
-| 500 | Internal server error |
-| 503 | If the server does not support Federated Sharing (i.e. disabled by administrator) |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+| 400 |200|Invalid parameters|
+| 503 |200|If the server does not support Federated Sharing (i.e. disabled by administrator) |
 
 In case of an error consumers SHOULD be made aware of the error. The OCS message MUST be used by the endpoint to specify a proper error message that can be used to analyze issues.
 
@@ -382,9 +370,9 @@ token | | Unique and secret token used to access the file.
 
 The expected response MUST in any case be a OCS success message even if the deny did not work. The only exception being 503 when Federated Sharing is not enabled.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 503 | If the server does not support Federated Sharing (i.e. disabled by administrator) |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+| 503 |200|If the server does not support Federated Sharing (i.e. disabled by administrator) |
 
 <aside class="notice">
 This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
@@ -418,7 +406,6 @@ Parameter | Default | Description
 --------- | ------- | -----------
 token | | Unique and secret token used to access the file.
 
-
 ### Response
 > In case of success, a OCS success message without further details is returned:
 
@@ -436,9 +423,10 @@ token | | Unique and secret token used to access the file.
 
 The expected response MUST in any case be a OCS success message even if the deny did not work. The only exception being 503 when Federated Sharing is not enabled.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 503 | If the server does not support Federated Sharing (i.e. disabled by administrator) |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+| 400 |200|Invalid parameters|
+| 503 |200|If the server does not support Federated Sharing (i.e. disabled by administrator) |
 
 <aside class="notice">
 This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
@@ -494,9 +482,10 @@ token | | Unique and secret token used to access the file.
 
 The expected response MUST in any case be a OCS success message even if the deny did not work. The only exception being 503 when Federated Sharing is not enabled.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 503 | If the server does not support Federated Sharing (i.e. disabled by administrator) |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+| 400 |200|Invalid parameters|
+| 503 |200|If the server does not support Federated Sharing (i.e. disabled by administrator) |
 
 <aside class="notice">
 This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
@@ -549,7 +538,7 @@ Get a list of all shared files for the currently logged-in user.
 > Lists all shares of the user admin with the password admin:
 
 ```http
-GET /master/ocs/v2.php/apps/files_sharing/api/v1/shares HTTP/1.1
+GET /ocs/v2.php/apps/files_sharing/api/v1/shares HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -596,11 +585,11 @@ subfiles | `false` |  Whether all shares within the folder should be returned.
 
 The expected response MUST in any case be a OCS success message containing the share data. 
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 400 | Not a directory (if the `subfile` argument was used) |
-| 401 | Authentication was not successful. |
-| 404 | User has no shared files or folder does not exist. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|400|200|Not a folder (if the `subfile` argument was used)|
+|404|200|User has no shared files or folder does not exist.|
+|997|401|Authentication was not successful. |
 
 ## Get information about a share
 Get information about a specific share using the share id.
@@ -609,7 +598,7 @@ Get information about a specific share using the share id.
 > Following request would request information about the share with the ID "1" under the context of the user "admin".
 
 ```http
-GET /master/ocs/v2.php/apps/files_sharing/api/v1/shares/1 HTTP/1.1
+GET /ocs/v2.php/apps/files_sharing/api/v1/shares/1 HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -654,10 +643,10 @@ shareId |  | ID of the requested share.
 
 The expected response is, in case of success, a OCS success message containing the data structure. In error cases the following OCS status codes MUST be used:
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 401 | Authentication was not successful |
-| 404 | Share does not exist. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|404|200|Share does not exist.|
+|997|401|Authentication was not successful. |
 
 In case of an error consumers SHOULD be made aware of the error. The OCS message MUST be used by the endpoint to specify a proper error message that can be used to analyze issues.
 
@@ -668,7 +657,7 @@ Shares a file or folder with an user on the same instance.
 > Following request will share the file `/welcome.txt` of the user `admin` with the user `test`:
 
 ```http
-POST /master/ocs/v2.php/apps/files_sharing/api/v1/shares HTTP/1.1
+POST /ocs/v2.php/apps/files_sharing/api/v1/shares HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -722,11 +711,11 @@ permissions |31|1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = a
 
 The expected response is, in case of success, a OCS success message with the defined data structure. In error cases the following OCS status codes MUST be used:
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 400 | Unknown share type.|
-| 401 | Authentication was not successful.|
-| 404 | File couldnt get shared.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|400|200|Unknown share type.|
+|404|200|File could not get shared.|
+|997|401|Authentication was not successful. |
 
 ## Unshare an existing share
 Unshares a shared file or folder.
@@ -735,7 +724,7 @@ Unshares a shared file or folder.
 > Following request will delete the share with the id `1` of the user `admin`:
 
 ```http
-DELETE /master/ocs/v2.php/apps/files_sharing/api/v1/shares/1 HTTP/1.1
+DELETE /ocs/v2.php/apps/files_sharing/api/v1/shares/1 HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -764,10 +753,10 @@ shareId |  | ID of the share to revoke.
 
 The expected response is, in case of success, a OCS success message with the defined data structure. In error cases the following OCS status codes MUST be used:
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 401 | Authentication was not successful.|
-| 404 | Share could not get unshared.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|404|200|Share could not get unshared.|
+|997|401|Authentication was not successful. |
 
 ## Update an existing share
 Updates an existing share such as adjusting the permissions or the password.
@@ -776,7 +765,7 @@ Updates an existing share such as adjusting the permissions or the password.
 > Following request will set the permissions of the share with the id `9` to `31:
 
 ```http
-PUT /master/ocs/v2.php/apps/files_sharing/api/v1/shares/9 HTTP/1.1
+PUT /ocs/v2.php/apps/files_sharing/api/v1/shares/9 HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -817,12 +806,12 @@ permissions ||1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
 
 The expected response is, in case of success, a OCS success message with the defined data structure. In error cases the following OCS status codes MUST be used:
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 400 | Wrong or no update parameter given.|
-| 401 | Authentication was not successful.|
-| 403 | Public upload disabled by the admin.|
-| 404 | Could not update share.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|400|200|Invalid parameters.|
+|403|200|Public upload disabled by the admin.|
+|404|200|Share could not get updated.|
+|997|401|Authentication was not successful. |
 
 # Activity
 > A valid service definition looks as following:
@@ -846,6 +835,7 @@ The "ACTIVITY" module allows consumers  to show a list of actions happening on t
 
 ### HTTP Request
 > Following request would request the data of the user `admin`:
+
 ```http
 GET /ocs/v2.php/cloud/activity HTTP/1.1
 Host: localhost
@@ -901,6 +891,10 @@ The response MUST be a OCS success message or a 993 forbidden statuscode if the 
 
 In case a start or count parameter is specified endpoints MUST return the newest entries first to allow consumers to chunk the event transmission.
 
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful. |
+
 # Provisoning [Experimental]
 > A valid service definition looks as following:
 
@@ -947,7 +941,7 @@ Creates a new user on the server.
 > Creates an user "newUser" with the password "newPassword":
 
 ```http
-POST /master/ocs/v2.php/cloud/users HTTP/1.1
+POST /ocs/v2.php/cloud/users HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -983,12 +977,11 @@ password || Password of the user.
 
 The expected response MUST, in case of success, be a OCS success message.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 400 | Invalid input data. |
-| 401 | Authentication was not successful. |
-| 409 | Username already exists. |
-| 500 | Unknown error occurred whilst adding the user. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|102|200|User already exists.|
+|400|200|Invalid input data.|
+|997|401|Authentication was not successful. |
 
 ## Get list of users
 Retrieves a list of users on the server.
@@ -997,7 +990,7 @@ Retrieves a list of users on the server.
 > Request a list of users:
 
 ```http
-GET /master/ocs/v2.php/cloud/users HTTP/1.1
+GET /ocs/v2.php/cloud/users HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1036,9 +1029,9 @@ offset||Optional offset.
 
 The expected response MUST, in case of success, be a OCS success message containing the user names as data element.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 401 | Authentication was not successful. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful. |
 
 ## Get a user
 
@@ -1048,7 +1041,7 @@ Retrieves information about a single user.
 > To request information about an user called "admin" the following request would be valid: 
 
 ```http
-GET /master/ocs/v2.php/cloud/users/admin HTTP/1.1
+GET /ocs/v2.php/cloud/users/admin HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1095,10 +1088,10 @@ userId | User name of the user to lookup.
 
 In case the action was successfully a successful OCS response object MUST be returned by the server.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 401 | Authentication was not successful. |
-| 404 | User not found. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
+|998|200|User not found.|
 
 ## Edit user attributes
 Edits attributes related to a user. Users are able to edit email, displayname and password; admins can also edit the quota value.
@@ -1107,7 +1100,7 @@ Edits attributes related to a user. Users are able to edit email, displayname an
 > Following request would change the password of the user "admin" to "NewUserPassword";
 
 ```http
-PUT /master/ocs/v2.php/cloud/users/admin HTTP/1.1
+PUT /ocs/v2.php/cloud/users/admin HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1148,11 +1141,9 @@ value | | New value for the field.
 
 The expected response MUST, in case of success, be a OCS success message.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|400|Invalid input data.|
-|401|authentication was not successful or invalid key.|
-|404|User not found.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful or user not found.|
 
 ## Delete user
 Deletes a user from the instance.
@@ -1191,9 +1182,10 @@ userId | User ID of the user to delete.
 
 In case the action was successfully a successful OCS response object MUST be returned by the server.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|401|Authentication was not successful or user is not permitted to perform this action.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
+
 
 ## Get group memberships
 Retrieves a list of groups the specified user is member of.
@@ -1202,7 +1194,7 @@ Retrieves a list of groups the specified user is member of.
 > Following request would get the membership information of the user named "test":
 
 ```http
-GET /ocs/v2.php/cloud/users/test/group HTTP/1.1
+GET /ocs/v2.php/cloud/users/test/groups HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1237,10 +1229,9 @@ userId | User ID of the user to delete.
 
 If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the user groups.
 
-
-| Status code | Meaning               |
-|-------------|-----------------------|
-|401|Authentication was not successful or user is not permitted to perform this action.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
 ## Add user to group
 Adds the specified user to the specified group.
@@ -1249,7 +1240,7 @@ Adds the specified user to the specified group.
 > Following request adds the user "test" to the group "admin":
 
 ```http
-POST /master/ocs/v2.php/cloud/users/test/groups HTTP/1.1
+POST /ocs/v2.php/cloud/users/test/groups HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1290,10 +1281,10 @@ groupid || ID of the group that the user should get added to.
 
 The expected response MUST, in case of success, be a OCS success message.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 400 | Invalid input data. |
-| 401 | Failed to add user to group. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|103|200|Failed to add user to group.|
+|997|401|Authentication was not successful.|
 
 ## Remove user from group
 Removes the specified user to the specified group.
@@ -1302,7 +1293,7 @@ Removes the specified user to the specified group.
 > Following request removes the user "test" from the group "admin":
 
 ```http
-DELETE /master/ocs/v2.php/cloud/users/test/groups HTTP/1.1
+DELETE /ocs/v2.php/cloud/users/test/groups HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1343,11 +1334,10 @@ groupid || ID of the group that the user should get removed from.
 
 In case the action was successfully a successful OCS response object MUST be returned by the server. According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 400 | Invalid input data. |
-| 403 | Insufficient privileges. |
-| 500 | Failed to remove user from group. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|103|200|Failed to remove user from group.|
+|997|401|Authentication was not successful.|
 
 ## Promote user to subadmin
 Makes a user the subadmin of a group.
@@ -1356,7 +1346,7 @@ Makes a user the subadmin of a group.
 > Following request would make the user "test" a subadmin of the group "admin":
 
 ```http
-POST /master/ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
+POST /ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1395,13 +1385,10 @@ groupid | Group that the user should become subadmin of.
 
 If the action could be performed a successful OCS response object MUST be returned by the server.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|401|Authentication was not successful or user is not permitted to perform this action.|
-|404|User does not exist.|
-|404|Group does not exist.|
-|401|Authentication was not successful.|
-|500|Unknown failure.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|101|200|User or group not found.|
+|997|401|Authentication was not successful.|
 
 ## Remove subadmin privileges
 Removes the subadmin rights for the user specified from the group specified.
@@ -1410,7 +1397,7 @@ Removes the subadmin rights for the user specified from the group specified.
 > Following request would remove the subadmin privileges of user "test" from "admin":
 
 ```http
-DELETE /master/ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
+DELETE /ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1450,11 +1437,9 @@ groupid | Group that the user should become a regular member of of.
 If the action could be performed a successful OCS response object MUST be returned by the server.
 According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|204|Successful.|
-|401|Authentication was not successful or user is not permitted to perform this action.|
-|401|Authentication was not successful.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
 ## Get subadmin privileges of user
 Returns the groups in which the user is a subadmin.
@@ -1463,7 +1448,7 @@ Returns the groups in which the user is a subadmin.
 > Following request would list all groups that the user "test" is a subadmin of.
 
 ```http
-GET /master/ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
+GET /ocs/v1.php/cloud/users/test/subadmins HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1496,12 +1481,10 @@ userId | User ID of the user to get membership from.
 
 In case the action was successfully a successful OCS response object MUST be returned by the server. The `data` element MUST contain a list of groups.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|200|Successful.|
-|401|Authentication was not successful.|
-|404|User does not exist.|
-|500|Unknown failure.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|101|200|User does not exist.|
+|997|401|Authentication was not successful.|
 
 ## Get groups on the server
 Retrieves a list of groups from the cloud server.
@@ -1510,7 +1493,7 @@ Retrieves a list of groups from the cloud server.
 > Following request would get a list of all groups on the server:
 
 ```http
-GET /master/ocs/v1.php/cloud/groups HTTP/1.1
+GET /ocs/v1.php/cloud/groups HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1541,11 +1524,9 @@ offset||Optional offset.
 </ocs>
 ```
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|401|Authentication was not successful.|
-|404|User does not exist.|
-|500|Unknown failure.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
 ## Create a new group
 Creates a new group.
@@ -1554,7 +1535,7 @@ Creates a new group.
 > Following request would create a group with the name "NewGroup":
 
 ```http
-POST /master/ocs/v1.php/cloud/groups HTTP/1.1
+POST /ocs/v1.php/cloud/groups HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1589,13 +1570,10 @@ groupid||Name of the group to create.
 
 If the action could be performed a successful OCS response object MUST be returned by the server.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|201|Successful.|
-|400|Invalid input data.|
-|401|Authentication was not successful.|
-|409|Group already exists.|
-|500|Failed to create the group.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|102|200|Group already exists.|
+|997|401|Authentication was not successful.|
 
 ## Get members of a group
 Retrieves a list of group members.
@@ -1604,7 +1582,7 @@ Retrieves a list of group members.
 > Following request would get the membership information of the user named "test":
 
 ```http
-GET /master/ocs/v1.php/cloud/groups/admin HTTP/1.1
+GET /ocs/v1.php/cloud/groups/admin HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1639,9 +1617,9 @@ groupId | The ID of the group to request membership from.
 
 If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the user groups.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|401|Authentication was not successful or user is not permitted to perform this action.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
 ## Get subadmins of a group
 Returns subadmins of the group.
@@ -1650,7 +1628,7 @@ Returns subadmins of the group.
 > Following request would get the membership information of the user named "test":
 
 ```http
-GET /master/ocs/v1.php/cloud/groups/admin/subadmins HTTP/1.1
+GET /ocs/v1.php/cloud/groups/admin/subadmins HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1685,11 +1663,10 @@ groupId | The ID of the group to request a list of subadmins from.
 
 If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the subadmins.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|401|Authentication was not successful.|
-|404|Group does not exist.|
-|500|Unknown failure.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
+|998|200|Group does not exist.|
 
 ## Delete a group
 Removes a group.
@@ -1698,7 +1675,7 @@ Removes a group.
 > Following request would delete the group "test":
 
 ```http
-DELETE /master/ocs/v1.php/cloud/groups/test HTTP/1.1
+DELETE /ocs/v1.php/cloud/groups/test HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1729,11 +1706,11 @@ groupId | ID of the group to delete.
 If the action could be performed a successful OCS response object MUST be returned by the server.
 According to general requirements of DELETE being an idempotent operation success is even reported in case the user does not exist. The status code in case of a successful operation is 204/No Content.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|204|Successful.|
-|401|Authentication was not successful or user is not permitted to perform this action.|
-|401|Failed to delete group.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|101|200|Group does not exist.|
+|102|200|Failed to delete group.|
+|997|401|Authentication was not successful.|
 
 ## Get list of installed apps
 Returns a list of apps installed on the cloud server.
@@ -1742,7 +1719,7 @@ Returns a list of apps installed on the cloud server.
 > Following request would get a list of all installed apps.
 
 ```http
-GET /master/ocs/v1.php/cloud/apps HTTP/1.1
+GET /ocs/v1.php/cloud/apps HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1774,21 +1751,18 @@ OCS-REQUEST: true
 
 If the action could be performed a successful OCS response object MUST be returned by the server. The data element must contain an array of the installed apps.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-|400|Invalid input data.|
-|401|Authentication was not successful.|
-|404|Group does not exist.|
-|500|Unknown failure.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
 ## Get application information
 Get information about the specified application.
 
 ### HTTP Request
-> Following request would delete the group "test":
+> Following request would get information about the app "files":
 
 ```http
-GET /master/ocs/v2.php/cloud/apps/{appId} HTTP/1.1
+GET /ocs/v2.php/cloud/apps/files HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1802,7 +1776,7 @@ Parameter | Default
 appId | ID of the app to get more information from.
 
 ### Response
-> In case of success, a OCS success message without information about the app:
+> In case of success, a OCS success message with more information about the app:
 
 ```xml
 <?xml version="1.0"?>
@@ -1824,12 +1798,10 @@ appId | ID of the app to get more information from.
 
 In case the action was successfully a successful OCS response object MUST be returned by the server. The data element MUST contain a list of information about the app.
 
-
-| Status code | Meaning               |
-|-------------|-----------------------|
-|204|Successful.|
-|401|Authentication was not successful or user is not permitted to perform this action.|
-|404|Application not found.|
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
+|998|200|Application not found.|
 
 ## Enable application
 Enable an app.
@@ -1838,7 +1810,7 @@ Enable an app.
 > Enables the application "activity":
 
 ```http
-POST /master/ocs/v2.php/cloud/apps/activity HTTP/1.1
+POST /ocs/v2.php/cloud/apps/activity HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1869,9 +1841,9 @@ appId || ID of the application to enable.
 
 The expected response MUST, in case of success, be a OCS success message.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 401 | Authentication was not successful. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
 ## Disable application
 Disables the specified app. 
@@ -1880,7 +1852,7 @@ Disables the specified app.
 > Disables the application "activity":
 
 ```http
-DELETE /master/ocs/v2.php/cloud/apps/activity HTTP/1.1
+DELETE /ocs/v2.php/cloud/apps/activity HTTP/1.1
 Host: localhost
 Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
@@ -1911,9 +1883,9 @@ appId || ID of the application to disable.
 
 The expected response MUST, in case of success, be a OCS success message.
 
-| Status code | Meaning               |
-|-------------|-----------------------|
-| 401 | Authentication was not successful. |
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
 # Private Data [Experimental]
 > A valid service definition looks as following:
@@ -1943,92 +1915,89 @@ The `PRIVATE_DATA` module allows consumers to store data in a key-value storage.
 In case of a server error or connection problem consumers MUST handle this gracefully.
 
 ## Set value
+
 Sets a value in the key-value store for the currently logged-in user.
 
-#### Request
-- URL structure: `example.org/{store}/{storeName}/{key}`
-- HTTP method: POST
-- Scope: Authenticated
-- Arguments:
-- URL parameters:
-    - `storeName`: Name of the store (string)
-    - `key`: Name of they key (string)
-- Required arguments:
-    - `value`: Value that should get stored (string)
+### HTTP Request
+> Stores the value "myValue" in the key "myKey" in the "myStore" store:
 
-##### Success
-The response MUST be a OCS success message.
+```http
+POST /ocs/v2.php/privatedata/setattribute/myStore/myKey HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+Content-Length: 13
+Content-Type: application/x-www-form-urlencoded
 
-### Get all values of store
-Get all key-values stored within a specific store for the currently logged-in user.
+value=myValue
+```
 
-#### Request
-- URL structure: `example.org/{store}/{storeName}/{key}`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `storeName`: Name of the store (string)
-    - `key`: Name of they key (string)
+`POST example.org/{store}/{storeName}/{key}`
 
-#### Response
-##### Error
-- 401: authentication was not successful
+### URL Parameters
+Parameter | Default | Description
+--------- | ------- | -----------
+storeName || Store under which the value should get stored.
+key || Key of the value.
 
-##### Success
-The response MUST be a OCS success message and MUST contain a `data` array containing the elements, for example:
+### Request Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+value || Value of the key.
+
+### Response
+> In case of success, a OCS success message without further details is returned:
 
 ```xml
 <?xml version="1.0"?>
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>200</statuscode>
+  <statuscode>100</statuscode>
   <message/>
  </meta>
- <data>
-  <!-- List of stored values -->
-  <element>
-   <!-- Key of the stored value -->
-   <key>MyKey</key>
-   <!-- Store in which the data is stored, internally represented as "app" -->
-   <app>MyStore</app>
-   <!-- Value to store -->   
-   <value>ValueToStore</value>
-  </element>
-  <element>
-   <key>AnotherKey</key>
-   <app>MyStore</app>
-   <value>AnotherValue</value>
-  </element>
- </data>
+ <data/>
 </ocs>
 ```
 
-In case a store does not contain any values providers MUST return an empty data representation but MUST NOT return any error.
+The expected response MUST, in case of success, be a OCS success message.
 
-## Get value
-Get the value of a key stored within a specific store for the currently logged-in user.
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
-#### Request
-- URL structure: `example.org/{read}/{storeName}`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `storeName`: Name of the store (string)
+## Get values of key
 
-#### Response
-##### Error
-- 401: authentication was not successful
+Get all value of a key stored within a specific store for the currently logged-in user.
 
-##### Success
-The response MUST be a OCS success message and MUST contain a `data` array containing the elements, for example:
+### HTTP Request
+> Get the value of the the key "myKey" in the "myStore" store:
+
+```http
+GET /ocs/v2.php/privatedata/getattribute/myStore/myKey HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
+
+`GET example.org/{read}/{storeName}/{key}`
+
+### URL Parameters
+Parameter | Default | Description
+--------- | ------- | -----------
+storeName || Store under which the value should get looked-up.
+key || Key of the value to look-up.
+
+### Response
+> In case there is an entry a successful OCS response object MUST be returned by the server, the values MUST be embedded in the data element and at least consist of the following elements:
 
 ```xml
 <?xml version="1.0"?>
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>200</statuscode>
+  <statuscode>100</statuscode>
   <message/>
  </meta>
  <data>
@@ -2044,33 +2013,50 @@ The response MUST be a OCS success message and MUST contain a `data` array conta
 </ocs>
 ```
 
-In case a key does not contain a value providers MUST return an empty data representation but MUST NOT return any error.
+The expected response MUST, in case of success, be a OCS success message containing the requested key-value entry.
+
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
 
 ## Delete entry
 Get the value of a key stored within a specific store for the currently logged-in user.
 
-#### Request
-- URL structure: `example.org/{delete}/{storeName}/{key}`
-- HTTP method: GET
-- Scope: Authenticated
-- URL parameters:
-    - `storeName`: Name of the store (string)
-    - `key`: Name of they key (string)
+### HTTP Request
+> Deletes the key "myKey" in the "myStore" store:
 
-#### Response
-##### Error
-- 401: authentication was not successful
+```http
+POST /ocs/v2.php/privatedata/deleteattribute/myStore/myKey HTTP/1.1
+Host: localhost
+Authorization: Basic YWRtaW46YWRtaW4=
+OCS-REQUEST: true
+```
 
-##### Success
-The response MUST be a OCS success message.
+`POST example.org/{delete}/{storeName}/{key}`
 
+### URL Parameters
+Parameter | Default | Description
+--------- | ------- | -----------
+storeName || Store under which the value should get deleted.
+key || Key to delete.
 
-# Errors & Status codes
+### Response
+> In case of success, a OCS success message without further details is returned:
 
-OCS uses the following error codes returned as HTTP statuscode. The following status codes are reserved and MUST not be used for any other purposes. Other status codes indicate custom errors that can be used by modules. 
+```xml
+<?xml version="1.0"?>
+<ocs>
+ <meta>
+  <status>ok</status>
+  <statuscode>100</statuscode>
+  <message/>
+ </meta>
+ <data/>
+</ocs>
+```
 
-| Statuscode | Meaning               |
-|------------|-----------------------|
-| 200        | Success               |
-| 401        | Authentication failed |
-| 404        | Unknown request       |
+The expected response MUST, in case of success, be a OCS success message.
+
+| OCS status code | HTTP status code | Meaning               |
+|-----------------|------------------|-----------------------|
+|997|401|Authentication was not successful.|
