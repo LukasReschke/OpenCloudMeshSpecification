@@ -134,12 +134,12 @@ A OCS response MUST consist of the following elements:
 - `ocs`: Array that contains the whole response
     - `meta`: Array that contains meta information
         - `status`: The status of the response, either "ok" or "fail". MUST be "ok" if statuscode is set to 200, "fail" otherwise.
-        - `statuscode`: The OCS status code of the response, everything except 200 MUST be handled as failure.
+        - `statuscode`: The OCS status code of the response. 200 indicates a successful response. 
         - `message`: An optional message that MAY contain a status message, such as a error message.
     - `data`: Array that contains the actual response, content of the array depends completely on the endpoint.
 
 <aside class="notice">
-The statuscode returned in the OCS response MAY differ by the HTTP status code. In the following module specifications the returned OCS and HTTP status codes are specified. In case of a fatal server error a 5xx error code is acceptable.
+The statuscode returned in the OCS response MAY differ by the HTTP status code. In the following module specifications the returned OCS and HTTP status codes are specified. It is encouraged to use restful status codes and use the same OCS and HTTP status code.
 </aside>
 
 # Authentication
