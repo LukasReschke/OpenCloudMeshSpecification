@@ -102,7 +102,7 @@
 
 <h3 id="cookies">Cookies</h3>
 
-<p>To work together with load-balanced environments consumers SHOULD resend any cookies as defined in <a href="http://tools.ietf.org/html/rfc6265">RFC 6265</a>. As stated in the &ldquo;Authentication&rdquo; section any Basic Auth authentication header MUST be resend.</p>
+<p>To work together with load-balanced environments consumers SHOULD resend any cookies as defined in <a href="http://tools.ietf.org/html/rfc6265">RFC 6265</a>. As stated in the &ldquo;Authentication&rdquo; section any Basic Auth authentication header MUST be resend as the session referenced by the cookie MAY expire.</p>
 
 <p>It shall be noted that OCS endpoints MUST behave properly regardless whether cookies are resent or not.</p>
 
@@ -250,11 +250,15 @@ The statuscode returned in the OCS response MAY differ by the HTTP status code. 
 
 <p>Authentication is performed by sending a Basic HTTP Authentication header. Thus OCS endpoints MUST support the Basic Auth Access Authentication system as defined in <a href="https://tools.ietf.org/html/rfc2617">RFC2617</a>. </p>
 
-<p>The credentials provided in the Authentication header MUST be UTF-8 encoded. Taking <code class="prettyprint">contrasea</code> as example the correct encoding would be <code class="prettyprint">Y29udHJhc2XDsWE=</code>, any other encoding such as  ISO-8859-1 (<code class="prettyprint">Y29udHJhc2XxYQ==</code>) is considered invalid and MUST NOT be used. </p>
+<p>The credentials provided in the authentication header MUST be UTF-8 encoded. Taking <code class="prettyprint">contrasea</code> as example the correct encoding would be <code class="prettyprint">Y29udHJhc2XDsWE=</code>, any other encoding such as  ISO-8859-1 (<code class="prettyprint">Y29udHJhc2XxYQ==</code>) is considered invalid and MUST NOT be used. </p>
 
 <p>OCS compatible APIs MAY use cookies as defined in <a href="http://tools.ietf.org/html/rfc6265">RFC 6265</a> to authenticate future requests as well, if after successful authentication the endpoint sends further cookies clients SHOULD resend these for future requests. However, any request MUST then include the Basic Authentication header as well as the provided cookies as the session might expire. When resending cookies consumers MUST add the following HTTP header to all requests: <code class="prettyprint">OCS-REQUEST: true</code>.</p>
 
 <p>OCS endpoints MUST in all cases handle connections correctly regardless whether cookies are sent.</p>
+
+<aside class="notice">
+The base64-encoded authentication header does not necessarily have to be the user credentials. The credentials could also be an unique and secret token used for authentication. (Token-based authentication)
+</aside>
 
 <h1 id="service-discovery">Service Discovery</h1>
 
@@ -802,7 +806,7 @@ This request needs to be sent to the sending instance by the receiving instance.
 <li>Update an existing share (<code class="prettyprint">share</code>)</li>
 </ol>
 
-<h2 id="get-list-of-shares">Get list of shares</h2>
+<h2 id="list-of-shares">List of shares</h2>
 
 <p>Get a list of all shared files for the currently logged-in user.</p>
 
@@ -841,12 +845,12 @@ This request needs to be sent to the sending instance by the receiving instance.
 <tr>
 <td>reshares</td>
 <td><code class="prettyprint">false</code></td>
-<td> Whether reshares should get returned.</td>
+<td> Whether reshares should get returned. (optional)</td>
 </tr>
 <tr>
 <td>subfiles</td>
 <td><code class="prettyprint">false</code></td>
-<td> Whether all shares within the folder should be returned.</td>
+<td> Whether all shares within the folder should be returned. (optional)</td>
 </tr>
 </tbody></table>
 
