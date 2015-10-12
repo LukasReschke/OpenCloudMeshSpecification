@@ -83,7 +83,7 @@ If an invalid date format has been provided consumers and endpoints MAY stop pro
     "ocs": {
         "meta": {
             "status": "ok",
-            "statuscode": 100,
+            "statuscode": 200,
             "message": null
         },
         "data": {
@@ -105,7 +105,7 @@ If an invalid date format has been provided consumers and endpoints MAY stop pro
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data>
@@ -133,8 +133,8 @@ A OCS response MUST consist of the following elements:
 
 - `ocs`: Array that contains the whole response
     - `meta`: Array that contains meta information
-        - `status`: The status of the response, either "ok" or "fail". MUST be "ok" if statuscode is set to 100, "fail" otherwise.
-        - `statuscode`: The OCS status code of the response, everything except 100 MUST be handled as failure.
+        - `status`: The status of the response, either "ok" or "fail". MUST be "ok" if statuscode is set to 200, "fail" otherwise.
+        - `statuscode`: The OCS status code of the response, everything except 200 MUST be handled as failure.
         - `message`: An optional message that MAY contain a status message, such as a error message.
     - `data`: Array that contains the actual response, content of the array depends completely on the endpoint.
 
@@ -306,7 +306,7 @@ remote | | URI of the sending instance.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -317,8 +317,8 @@ The expected response is, in case of success, a OCS success message. In error ca
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-| 400 |200|Invalid parameters|
-| 503 |200|If the server does not support Federated Sharing (i.e. disabled by administrator) |
+| 400 |400|Invalid parameters|
+| 503 |503|If the server does not support Federated Sharing (i.e. disabled by administrator) |
 
 In case of an error consumers SHOULD be made aware of the error. The OCS message MUST be used by the endpoint to specify a proper error message that can be used to analyze issues.
 
@@ -365,7 +365,7 @@ token | | Unique and secret token used to access the file.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -376,7 +376,7 @@ The expected response MUST in any case be a OCS success message even if the deny
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-| 503 |200|If the server does not support Federated Sharing (i.e. disabled by administrator) |
+| 503 |503|If the server does not support Federated Sharing (i.e. disabled by administrator) |
 
 <aside class="notice">
 This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
@@ -418,7 +418,7 @@ token | | Unique and secret token used to access the file.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -429,8 +429,8 @@ The expected response MUST in any case be a OCS success message even if the deny
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-| 400 |200|Invalid parameters|
-| 503 |200|If the server does not support Federated Sharing (i.e. disabled by administrator) |
+| 400 |400|Invalid parameters|
+| 503 |503|If the server does not support Federated Sharing (i.e. disabled by administrator) |
 
 <aside class="notice">
 This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
@@ -477,7 +477,7 @@ token | | Unique and secret token used to access the file.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -488,8 +488,8 @@ The expected response MUST in any case be a OCS success message even if the deny
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-| 400 |200|Invalid parameters|
-| 503 |200|If the server does not support Federated Sharing (i.e. disabled by administrator) |
+| 400 |400|Invalid parameters|
+| 503 |503|If the server does not support Federated Sharing (i.e. disabled by administrator) |
 
 <aside class="notice">
 This request needs to be sent to the sending instance by the receiving instance. This request is not expected to be sent directly by an user.
@@ -591,8 +591,8 @@ The expected response MUST in any case be a OCS success message containing the s
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-|400|200|Not a folder (if the `subfile` argument was used)|
-|404|200|User has no shared files or folder does not exist.|
+|400|400|Not a folder (if the `subfile` argument was used)|
+|404|404|User has no shared files or folder does not exist.|
 |997|401|Authentication was not successful. |
 
 ## Get information about a share
@@ -717,8 +717,8 @@ The expected response is, in case of success, a OCS success message with the def
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-|400|200|Unknown share type.|
-|404|200|File could not get shared.|
+|400|400|Unknown share type.|
+|404|404|File could not get shared.|
 |997|401|Authentication was not successful. |
 
 ## Unshare an existing share
@@ -748,7 +748,7 @@ shareId |  | ID of the share to revoke.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -801,7 +801,7 @@ permissions ||1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -812,9 +812,9 @@ The expected response is, in case of success, a OCS success message with the def
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-|400|200|Invalid parameters.|
+|400|400|Invalid parameters.|
 |403|200|Public upload disabled by the admin.|
-|404|200|Share could not get updated.|
+|404|404|Share could not get updated.|
 |997|401|Authentication was not successful. |
 
 # Activity
@@ -972,7 +972,7 @@ password || Password of the user.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -983,8 +983,7 @@ The expected response MUST, in case of success, be a OCS success message.
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-|102|200|User already exists.|
-|400|200|Invalid input data.|
+|400|400|User already exists or invalid input data.|
 |997|401|Authentication was not successful. |
 
 ## Get list of users
@@ -1017,7 +1016,7 @@ offset||Optional offset.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data>
@@ -1094,8 +1093,8 @@ In case the action was successfully a successful OCS response object MUST be ret
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
+|404|404|User not found.|
 |997|401|Authentication was not successful.|
-|998|200|User not found.|
 
 ## Edit user attributes
 Edits attributes related to a user. Users are able to edit email, displayname and password; admins can also edit the quota value.
@@ -1136,7 +1135,7 @@ value | | New value for the field.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1177,7 +1176,7 @@ userId | User ID of the user to delete.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1276,7 +1275,7 @@ groupid || ID of the group that the user should get added to.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1287,7 +1286,7 @@ The expected response MUST, in case of success, be a OCS success message.
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-|103|200|Failed to add user to group.|
+|400|400|Failed to add user to group.|
 |997|401|Authentication was not successful.|
 
 ## Remove user from group
@@ -1329,7 +1328,7 @@ groupid || ID of the group that the user should get removed from.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1340,7 +1339,7 @@ In case the action was successfully a successful OCS response object MUST be ret
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
-|103|200|Failed to remove user from group.|
+|400|400|Failed to remove user from group.|
 |997|401|Authentication was not successful.|
 
 ## Promote user to subadmin
@@ -1380,7 +1379,7 @@ groupid | Group that the user should become subadmin of.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1431,7 +1430,7 @@ groupid | Group that the user should become a regular member of of.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1473,7 +1472,7 @@ userId | User ID of the user to get membership from.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data>
@@ -1518,7 +1517,7 @@ offset||Optional offset.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data>
@@ -1565,7 +1564,7 @@ groupid||Name of the group to create.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1669,8 +1668,8 @@ If the action could be performed a successful OCS response object MUST be return
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
+|404|404|Group does not exist.|
 |997|401|Authentication was not successful.|
-|998|200|Group does not exist.|
 
 ## Delete a group
 Removes a group.
@@ -1700,7 +1699,7 @@ groupId | ID of the group to delete.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1739,7 +1738,7 @@ OCS-REQUEST: true
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data>
@@ -1804,8 +1803,8 @@ In case the action was successfully a successful OCS response object MUST be ret
 
 | OCS status code | HTTP status code | Meaning               |
 |-----------------|------------------|-----------------------|
+|404|404|Application not found.|
 |997|401|Authentication was not successful.|
-|998|200|Application not found.|
 
 ## Enable application
 Enable an app.
@@ -1836,7 +1835,7 @@ appId || ID of the application to enable.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1878,7 +1877,7 @@ appId || ID of the application to disable.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -1958,7 +1957,7 @@ value || Value of the key.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
@@ -2001,7 +2000,7 @@ key || Key of the value to look-up.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data>
@@ -2052,7 +2051,7 @@ key || Key to delete.
 <ocs>
  <meta>
   <status>ok</status>
-  <statuscode>100</statuscode>
+  <statuscode>200</statuscode>
   <message/>
  </meta>
  <data/>
