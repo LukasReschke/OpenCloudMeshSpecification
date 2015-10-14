@@ -2,6 +2,7 @@
 @import 'normalize';
 @import 'compass';
 @import 'variables';
+@import 'syntax';
 @import 'icon-font';
 
 /*
@@ -43,7 +44,6 @@ body {
   pre, code {
     @extend %code-font;
     @extend %break-words;
-    border: 1px solid $print-color;
     border-radius: 5px;
     font-size: 0.8em;
   }

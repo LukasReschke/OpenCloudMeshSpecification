@@ -11,7 +11,7 @@ search: true
 
 This document defines APIs and protocols to enable integration between different web-services, servers and clients.
 
-"OCS v2.0" consists of a set of API endpoints mainly targeted to be implemented by consumers and providers of file storage / sharing servers ("cloud").
+**Open Collaboration Services v2.0** ("OCS v2.0") consists of a set of API endpoints mainly targeted to be implemented by consumers and providers of file storage / sharing servers ("cloud").
 
 The goal is to enable Integration of cloud services, web services and social communities with each other, with desktop and mobile applications. This must be done in a decentralized and federated way, free and secure, privacy protected and vendor independent. OCS aims to solve these problems.
 
