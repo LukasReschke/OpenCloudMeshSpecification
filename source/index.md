@@ -269,7 +269,7 @@ The "FEDERATED_SHARING" module allows consumers to share files between service p
 - Accepting a share offer from other providers (`share`)
 - Denying a share offer from other providers (`share`)
 - Unsharing a previously shared file (`share`)
-- Accessing shared files using WebDAV (`webdav`)
+- f files using WebDAV (`webdav`)
 
 ## Sending a share offer
 
@@ -496,7 +496,7 @@ This request needs to be sent to the sending instance by the receiving instance.
 </aside>
 
 ## Accessing shared files
-> To access the file `sharedfile.txt` of the federated share with the token `kW1gR9TRKXW9Jwk` the following request has to be sent. Note that as password the base64 representation of `kW1gR9TRKXW9Jwk:` is used. The ending `:` is required.
+> To access the file `sharedfile.txt` of the federated share with the token `kW1gR9TRKXW9Jwk` the following request has to be sent. Note that as authentication header the base64 representation of `kW1gR9TRKXW9Jwk:` is used.
 
 ```http
 GET /public.php/webdav/sharedfile.txt HTTP/1.1
@@ -507,7 +507,7 @@ OCS-REQUEST: true
 
 Shares files may be accessed using WebDAV ([RFC 4918](https://tools.ietf.org/html/rfc4918)) under the specified `webdav` endpoint using HTTP Basic Authentication.
 
-The credentials will be of the value `token:`, note the empty password field.
+The credentials will be of the value `token:`, the password field is generally empty except if this is a password protected share. In that case the server needs to return a 403 and request new credentials. In this case the user is expected to provide the valid password.
 
 # Sharing
 > A valid service definition looks as following:
