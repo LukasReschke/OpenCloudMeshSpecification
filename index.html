@@ -387,7 +387,7 @@ The base64-encoded authentication header does not necessarily have to be the use
 <li>Accepting a share offer from other providers (<code class="prettyprint">share</code>)</li>
 <li>Denying a share offer from other providers (<code class="prettyprint">share</code>)</li>
 <li>Unsharing a previously shared file (<code class="prettyprint">share</code>)</li>
-<li>Accessing shared files using WebDAV (<code class="prettyprint">webdav</code>)</li>
+<li>f files using WebDAV (<code class="prettyprint">webdav</code>)</li>
 </ul>
 
 <h2 id="sending-a-share-offer">Sending a share offer</h2>
@@ -763,7 +763,7 @@ This request needs to be sent to the sending instance by the receiving instance.
 <h2 id="accessing-shared-files">Accessing shared files</h2>
 
 <blockquote>
-<p>To access the file <code class="prettyprint">sharedfile.txt</code> of the federated share with the token <code class="prettyprint">kW1gR9TRKXW9Jwk</code> the following request has to be sent. Note that as password the base64 representation of <code class="prettyprint">kW1gR9TRKXW9Jwk:</code> is used. The ending <code class="prettyprint">:</code> is required.</p>
+<p>To access the file <code class="prettyprint">sharedfile.txt</code> of the federated share with the token <code class="prettyprint">kW1gR9TRKXW9Jwk</code> the following request has to be sent. Note that as authentication header the base64 representation of <code class="prettyprint">kW1gR9TRKXW9Jwk:</code> is used.</p>
 </blockquote>
 <pre class="highlight http"><code><span class="nf">GET</span> <span class="nn">/public.php/webdav/sharedfile.txt</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost</span>
@@ -773,7 +773,7 @@ This request needs to be sent to the sending instance by the receiving instance.
 
 <p>Shares files may be accessed using WebDAV (<a href="https://tools.ietf.org/html/rfc4918">RFC 4918</a>) under the specified <code class="prettyprint">webdav</code> endpoint using HTTP Basic Authentication.</p>
 
-<p>The credentials will be of the value <code class="prettyprint">token:</code>, note the empty password field.</p>
+<p>The credentials will be of the value <code class="prettyprint">token:</code>, the password field is generally empty except if this is a password protected share. In that case the server needs to return a 403 and request new credentials. In this case the user is expected to provide the valid password.</p>
 
 <h1 id="sharing">Sharing</h1>
 
