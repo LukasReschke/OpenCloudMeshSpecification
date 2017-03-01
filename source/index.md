@@ -766,7 +766,7 @@ The expected response is, in case of success, a OCS success message with the def
 Updates an existing share such as adjusting the permissions or the password.
 
 ### HTTP Request
-> Following request will set the permissions of the share with the id `9` to `31:
+> Following request will set the permissions of the share with the id `9` to `31`:
 
 ```http
 PUT /ocs/v2.php/apps/files_sharing/api/v1/shares/9 HTTP/1.1
@@ -847,7 +847,7 @@ Authorization: Basic YWRtaW46YWRtaW4=
 OCS-REQUEST: true
 ```
 
-`POST http://example.com/{list}`
+`GET http://example.com/{list}`
 
 ### Query Parameters
 
